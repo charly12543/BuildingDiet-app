@@ -657,6 +657,11 @@ async function guardarPlanBackend(datos, dieta){
 
     let html = document.getElementById("resultadoPRO").innerHTML;
 
+    if(!html || html.trim() === ""){
+    alert("Primero genera la dieta bro 🔥");
+    return;
+    }
+
     let payload = {
       cliente: datos,
       dieta: dieta,
