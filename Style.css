@@ -303,6 +303,53 @@ section{ padding:60px 20px; max-width:800px; margin:auto; }
 }
 
 
+/* BOTONES PLANES */
+
+.btn-ver{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,#d4af37,#f5d76e);
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.btn-ver:hover{
+  transform:scale(1.05);
+}
+
+.btn-delete{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#ff4d4d;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.btn-delete:hover{
+  background:#ff1a1a;
+  transform:scale(1.05);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* ----- RESPONSIVE ----- */
