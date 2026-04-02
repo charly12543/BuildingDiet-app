@@ -1,0 +1,343 @@
+/* RESET */
+*{ margin:0; padding:0; box-sizing:border-box; }
+html, body{ overflow-x:hidden; }
+
+.dieta-card{
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+[contenteditable="true"] {
+  outline: 2px dashed #d4af37;
+  padding: 10px;
+}
+
+.card-meal{
+  page-break-inside: avoid;
+  break-insside: avoid;
+  margin-bottom: 15px;
+}
+
+ul{
+  margin-left: 15px;
+}
+
+/* VARIABLES */
+:root{
+  --bg-dark:#0b0b0b;
+  --card-bg:#1c1c1c;
+  --text-light:#fff;
+  --gold:#d4af37;
+  --gold-bright:#f5d76e;
+}
+
+/* BODY */
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--bg-dark);
+  color:var(--text-light);
+  line-height:1.6;
+  padding-top:70px;
+}
+
+/* NAVBAR */
+.navbar{
+  position:fixed;
+  top:0;
+  width:100%;
+  background:rgba(11,11,11,0.9);
+  padding:10px 20px;
+  z-index:1000;
+}
+.nav-container{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.nav-links{
+  list-style:none;
+  display:flex;
+  gap:15px;
+}
+.nav-links li a{
+  color:white;
+  text-decoration:none;
+  font-weight:500;
+}
+.nav-links.active{
+  display:block;
+}
+
+/* LOGO */
+.logo img{
+  height:45px;
+  width:auto;
+  display:block;
+  filter:drop-shadow(0 0 6px rgba(212,175,55,0.6));
+  transition:0.3s;
+}
+.logo img:hover{
+  transform:scale(1.05);
+}
+
+/* MENU HAMBURGUESA */
+.menu-toggle{
+  display:none;
+  font-size:1.5rem;
+  cursor:pointer;
+  color:white;
+}
+
+/* HERO */
+.hero{
+  padding:100px 20px 60px;
+  text-align:center;
+  background:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)), url("imagenes/fondo-fitness.jpg");
+  background-size:cover;
+  background-position:center;
+}
+.hero h1{ font-size:2.2rem; color:var(--gold); }
+.hero p{ opacity:0.8; margin-top:10px; }
+
+/* SECCIONES */
+section{ padding:60px 20px; max-width:800px; margin:auto; }
+
+/* CALCULADORA */
+.calculadora{
+  background:var(--card-bg);
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.5);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.calculadora input, .calculadora select, .calculadora button{
+  width:100%; padding:14px; border-radius:10px; border:none; font-size:16px;
+}
+.calculadora input, .calculadora select{ background:#111; color:white; }
+.calculadora button{
+  background:var(--gold);
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+.calculadora button:hover{ background:var(--gold-bright); transform:scale(1.03); }
+
+/* CARD DIETA */
+.dieta-card{
+  margin-top:20px;
+  background:linear-gradient(135deg,#1c1c1c,#0b0b0b);
+  border-radius:15px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.6);
+}
+.card-meal{ background:#111; padding:15px; border-radius:12px; margin-bottom:15px; }
+.card-meal h4{ color:var(--gold); margin-bottom:8px; }
+.card-meal ul{ list-style:none; padding-left:0; }
+.card-meal li{ margin-bottom:5px; }
+
+/* WHATS PRO */
+.whats-box{
+  margin-top:30px;
+  padding:25px;
+  border-radius:20px;
+  text-align:center;
+  background:linear-gradient(135deg,#1c1c1c,#0b0b0b);
+  border:1px solid rgba(212,175,55,0.4);
+  box-shadow:0 10px 30px rgba(0,0,0,0.6);
+}
+.whats-box h3{ color:var(--gold); margin-bottom:10px; }
+.whats-box p{ font-size:14px; opacity:0.8; margin-bottom:15px; }
+
+.btn-whats-pro{
+  width:100%;
+  padding:18px;
+  border:none;
+  border-radius:50px;
+  background:linear-gradient(135deg,#25D366,#1ebe5d);
+  color:white;
+  font-weight:bold;
+  font-size:18px;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 10px 25px rgba(37,211,102,0.5);
+}
+.btn-whats-pro:hover{
+  transform:scale(1.08);
+  box-shadow:0 15px 40px rgba(37,211,102,0.8);
+}
+
+/* URGENCIA */
+.urgencia-whats{ display:block; margin-top:10px; font-size:12px; color:#ff6b6b; font-weight:bold; }
+
+
+
+/* ===== ARREGLO SECCIÓN PRO ===== */
+
+/* Contenedor principal */
+.lead-box {
+  background: var(--card-bg);
+  padding: 30px 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  margin-top: 40px;
+  text-align: center;
+}
+
+/* Título principal */
+.lead-box h2 {
+  font-size: 1.9rem;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+/* Textos descriptivos */
+.lead-box p {
+  margin-bottom: 15px;
+  opacity: 0.85;
+  font-size: 1rem;
+}
+
+/* Inputs de contacto */
+.lead-box input[type="text"] {
+  width: 100%;
+  margin: 8px 0;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #111;
+  color: var(--text-light);
+  font-size: 16px;
+}
+
+/* Contador de usuarios */
+.lead-box .contador {
+  font-weight: bold;
+  color: var(--gold-bright);
+  margin: 10px 0 15px;
+  font-size: 1.1rem;
+}
+
+/* Info bloque PRO */
+.pro-info {
+  background: linear-gradient(135deg,#1c1c1c,#0b0b0b);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+/* Título dentro del bloque PRO */
+.pro-info h3 {
+  margin-bottom: 10px;
+  color: var(--gold);
+}
+
+/* Urgencia */
+.urgencia {
+  font-size: 0.98rem;
+  color: #ff6b6b;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+
+/* FORMULARIO PRO OCULTO */
+.pro-form{
+  display:none;
+  flex-direction:column;
+  gap:10px;
+  margin-top:20px;
+  transition:0.4s;
+}
+
+/* Inputs PRO */
+.pro-form input,
+.pro-form select{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  background:#111;
+  color:white;
+  font-size:16px;
+}
+
+/* Animación */
+.pro-form.show{
+  display:flex;
+}
+
+
+.pro-form button{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-bright));
+  color:black;
+  font-weight:bold;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 8px 20px rgba(212,175,55,0.4);
+}
+
+.pro-form button:hover{
+  transform:scale(1.05);
+  box-shadow:0 12px 30px rgba(212,175,55,0.7);
+}
+
+.pro-form button:active{
+  transform:scale(0.98);
+}
+
+
+.pro-form button{
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+
+
+
+/* ----- RESPONSIVE ----- */
+@media (max-width:768px){
+  .lead-box {
+    padding: 25px 15px;
+  }
+
+  .lead-box h2 {
+    font-size: 1.6rem;
+  }
+
+  .lead-box p {
+    font-size: 0.95rem;
+  }
+
+  .lead-box input[type="text"] {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  .pro-info h3 {
+    font-size: 1.2rem;
+  }
+}
+
+
+
+
+
+/* MOBILE */
+@media (max-width:768px){
+  section{ padding:40px 15px; }
+  .hero h1{ font-size:1.8rem; }
+  .logo img{ height:35px; }
+  .menu-toggle{ display:block; }
+  .nav-links{ display:none; flex-direction:column; gap:10px; }
+}
