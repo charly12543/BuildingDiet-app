@@ -692,7 +692,7 @@ async function guardarPlanBackend(datos, dieta){
       html: html
     };
 
-    let res = await fetch("http://localhost:8080/api/guardar-plan", {
+    let res = await fetch("http://localhost:8080/api/planes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
