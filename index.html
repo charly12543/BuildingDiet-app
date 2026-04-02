@@ -721,17 +721,30 @@ async function guardarRutinaBackend(){
     let html = document.getElementById("resultadoPRO").innerHTML;  
     let nombre = document.getElementById("nombreCliente").value;  
 
+    if(!html || html.trim() === ""){
+      alert("Primero genera la rutina bro 🔥");
+      return;
+    }
+
+    let payload = {
+      cliente: {
+        nombre: nombre
+      },
+      rutinaHtml: html
+    };
+
     let res = await fetch("http://localhost:8080/api/guardar-rutina", {  
       method: "POST",  
       headers: {  
         "Content-Type": "application/json"  
       },  
-      let payload = {
-      cliente: {
-     nombre: document.getElementById("nombreCliente").value
-     },
-     rutinaHtml: html
-     }; 
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok){
+      console.error("❌ Error backend rutina");
+      return;
+    }
 
     let data = await res.json();  
 
@@ -740,6 +753,7 @@ async function guardarRutinaBackend(){
   } catch(err){  
     console.error("❌ Error rutina:", err);  
   }  
+}
 }  
 </script>
 
