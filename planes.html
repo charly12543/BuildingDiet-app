@@ -36,19 +36,19 @@
 
 <script>
 async function cargarPlanes() {
-    const res = await fetch("http://localhost:8080/planes");
+    const res = await fetch(`${API}/planes`);
     const data = await res.json();
 
     const contenedor = document.getElementById("contenedor-planes");
     contenedor.innerHTML = "";
 
-    data.reverse().forEach(plan => {
+    data.forEach(plan => {
 
         contenedor.innerHTML += `
             <div class="dieta-card">
 
                 <h3 style="color:#d4af37;">
-                    ${plan.cliente.nombre}
+                    ${plan.cliente?.nombre || "Sin nombre"}
                 </h3>
 
                 <p style="opacity:0.8;">
@@ -82,7 +82,7 @@ async function cargarPlanes() {
 async function eliminarPlan(id) {
     if (!confirm("¿Seguro que quieres eliminar este plan?")) return;
 
-    await fetch(`http://localhost:8080/planes/${id}`, {
+    await fetch(`${API}/planes/${id}`, {
         method: "DELETE"
     });
 
