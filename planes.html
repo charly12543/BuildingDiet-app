@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Planes - Charly Fitness</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="logo">
+      <img src="imagenes/logo.png" alt="logo">
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>📋 Planes generados</h1>
+  <p>Administra, visualiza y elimina planes fácilmente</p>
+</section>
+
+<!-- CONTENEDOR -->
+<section>
+  <div id="contenedor-planes" style="display:flex; flex-direction:column; gap:20px;"></div>
+</section>
+
+<script>
+async function cargarPlanes() {
+    const res = await fetch("http://localhost:8080/planes");
+    const data = await res.json();
+
+    const contenedor = document.getElementById("contenedor-planes");
+    contenedor.innerHTML = "";
+
+    data.reverse().forEach(plan => {
+
+        contenedor.innerHTML += `
+            <div class="dieta-card">
+
+                <h3 style="color:#d4af37;">
+                    ${plan.cliente.nombre}
+                </h3>
+
+                <p style="opacity:0.8;">
+                    📅 ${plan.fecha}
+                </p>
+
+                <div style="margin-top:10px;">
+                    🔥 ${plan.calorias || '-'} kcal |
+                    🥩 ${plan.proteina || '-'} |
+                    🍚 ${plan.carbos || '-'} |
+                    🥑 ${plan.grasa || '-'}
+                </div>
+
+                <div style="margin-top:15px; display:flex; gap:10px;">
+
+                    <button onclick="verPlan(${plan.id})" class="btn-ver">
+                        👁 Ver
+                    </button>
+
+                    <button onclick="eliminarPlan(${plan.id})" class="btn-delete">
+                        🗑 Eliminar
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+}
+
+async function eliminarPlan(id) {
+    if (!confirm("¿Seguro que quieres eliminar este plan?")) return;
+
+    await fetch(`http://localhost:8080/planes/${id}`, {
+        method: "DELETE"
+    });
+
+    cargarPlanes();
+}
+
+function verPlan(id) {
+    window.location.href = `ver-plan.html?id=${id}`;
+}
+
+cargarPlanes();
+</script>
+
+</body>
+</html>
