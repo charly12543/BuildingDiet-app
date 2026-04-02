@@ -35,6 +35,8 @@
 </section>
 
 <script>
+const API = "http://localhost:8080/api";
+
 async function cargarPlanes() {
     const res = await fetch(`${API}/planes`);
     const data = await res.json();
