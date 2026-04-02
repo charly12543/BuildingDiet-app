@@ -726,11 +726,12 @@ async function guardarRutinaBackend(){
       headers: {  
         "Content-Type": "application/json"  
       },  
-      body: JSON.stringify({  
-        nombre: nombre,  
-        rutinaHtml: html  
-      })  
-    });  
+      let payload = {
+      cliente: {
+     nombre: document.getElementById("nombreCliente").value
+     },
+     rutinaHtml: html
+     }; 
 
     let data = await res.json();  
 
