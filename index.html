@@ -741,7 +741,8 @@ async function guardarRutinaBackend(){
 
     console.log("📦 Enviando rutina:", payload);
 
-    let res = await fetch("http://localhost:8080/api/rutinas", {  
+    let res = await fetch("http://localhost:8080/api/guardar-rutina"), {  
+                    
       method: "POST",  
       headers: {  
         "Content-Type": "application/json"  
