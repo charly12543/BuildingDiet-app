@@ -715,29 +715,29 @@ async function guardarPlanBackend(datos, dieta){
 }
 
 /* ===================== guardarRutinaBackend ===================== */  
-/* ===================== guardarRutinaBackend ===================== */
 async function guardarRutinaBackend(){  
   try {  
 
     let html = document.getElementById("resultadoPRO").innerHTML;  
+
     let cliente = {
-  nombre: document.getElementById("nombreCliente").value,
-  peso: parseFloat(document.getElementById("peso").value),
-  altura: parseFloat(document.getElementById("altura").value),
-  edad: parseInt(document.getElementById("edad").value),
-  sexo: document.getElementById("sexo").value,
-  objetivo: document.getElementById("objetivo").value,
-  nivel: document.getElementById("nivel").value,
-  diasGym: parseInt(document.getElementById("diasGym").value) || 0,
-  tomaWhey: document.getElementById("tomaWhey").value === "true"
-   };  
+      nombre: document.getElementById("nombreCliente").value,
+      peso: parseFloat(document.getElementById("peso").value),
+      altura: parseFloat(document.getElementById("altura").value),
+      edad: parseInt(document.getElementById("edad").value),
+      sexo: document.getElementById("sexo").value,
+      objetivo: document.getElementById("objetivo").value,
+      nivel: document.getElementById("nivel").value,
+      diasGym: parseInt(document.getElementById("diasGym").value) || 0,
+      tomaWhey: document.getElementById("tomaWhey").value === "true"
+    };
 
     if(!html || html.trim() === ""){
       alert("Primero genera la rutina bro 🔥");
       return;
     }
 
-    if(!nombre){
+    if(!cliente.nombre){
       alert("Pon nombre del cliente bro 🔥");
       return;
     }
