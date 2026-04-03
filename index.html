@@ -715,6 +715,7 @@ async function guardarPlanBackend(datos, dieta){
 }
 
 /* ===================== guardarRutinaBackend ===================== */  
+/* ===================== guardarRutinaBackend ===================== */
 async function guardarRutinaBackend(){  
   try {  
 
@@ -726,6 +727,11 @@ async function guardarRutinaBackend(){
       return;
     }
 
+    if(!nombre){
+      alert("Pon nombre del cliente bro 🔥");
+      return;
+    }
+
     let payload = {
       cliente: {
         nombre: nombre
@@ -733,7 +739,9 @@ async function guardarRutinaBackend(){
       rutinaHtml: html
     };
 
-    let res = await fetch("http://localhost:8080/api/guardar-rutina", {  
+    console.log("📦 Enviando rutina:", payload);
+
+    let res = await fetch("http://localhost:8080/api/rutinas", {  
       method: "POST",  
       headers: {  
         "Content-Type": "application/json"  
@@ -742,13 +750,15 @@ async function guardarRutinaBackend(){
     });
 
     if(!res.ok){
-      console.error("❌ Error backend rutina");
+      let error = await res.text();
+      console.error("❌ Error backend rutina:", error);
       return;
     }
 
     let data = await res.json();  
 
     console.log("🏋️ Rutina guardada:", data);  
+    alert("✅ Rutina guardada");
 
   } catch(err){  
     console.error("❌ Error rutina:", err);  
