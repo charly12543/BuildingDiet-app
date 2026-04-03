@@ -32,9 +32,20 @@
 <!-- CONTENEDOR -->
 <section>
   <div id="contenedor-planes" style="display:flex; flex-direction:column; gap:20px;"></div>
+<h2 style="margin-top:40px;">🏋️ Rutinas generadas</h2>
+<div id="contenedor-rutinas" style="display:flex; flex-direction:column; gap:20px;"></div>
+
+<h2 style="margin-top:40px;">👁️ Visor</h2>
+<div id="visor" style="background:#fff; color:#000; padding:20px; border-radius:10px;">
+  Selecciona un plan o rutina
+</div>
 </section>
 
+
+
+<!-- SCRIPTS  -->  
 <script>
+/* ===================== FUNCION INTELIGENTE ===================== */    
 const API = "http://localhost:8080/api";
 
 async function cargarPlanes() {
@@ -81,6 +92,7 @@ async function cargarPlanes() {
     });
 }
 
+/* ===================== FUNCION ELIMINAR PLAN===================== */      
 async function eliminarPlan(id) {
     if (!confirm("¿Seguro que quieres eliminar este plan?")) return;
 
@@ -90,12 +102,85 @@ async function eliminarPlan(id) {
 
     cargarPlanes();
 }
+  
+/* ===================== FUNCION ELIMINAR RUTINA===================== */      
+async function eliminarRutina(id) {
+    if (!confirm("¿Eliminar rutina?")) return;
 
-function verPlan(id) {
-    window.location.href = `ver-plan.html?id=${id}`;
+    await fetch(`${API}/${id}`, {
+        method: "DELETE"
+    });
+
+    cargarRutinas();
 }
 
+  
+/* ===================== FUNCION VER PLAN ===================== */    
+async function verPlan(id) {
+    const res = await fetch(`${API}/planes/${id}`);
+    const plan = await res.json();
+
+    document.getElementById("visor").innerHTML = plan.html;
+}
+
+// RUTINA (se queda igual)
+async function verRutina(id) {
+    const res = await fetch(`${API}/${id}`);
+    const rutina = await res.json();
+
+    document.getElementById("visor").innerHTML = rutina.rutinaHtml;
+}
+
+ /* ===================== FUNCION VER RUTINA ===================== */      
+async function verRutina(id) {
+    const res = await fetch(`${API}/${id}`);
+    const rutina = await res.json();
+
+    document.getElementById("visor").innerHTML = rutina.rutinaHtml;
+}
+
+
+/* ===================== CARGA DE FUNCIONES ===================== */      
 cargarPlanes();
+cargarRutinas();
+
+/* ===================== FUNCION RUTINAS ===================== */    
+async function cargarRutinas() {
+    const res = await fetch(`${API}/list`);
+    const data = await res.json();
+
+    const contenedor = document.getElementById("contenedor-rutinas");
+    contenedor.innerHTML = "";
+
+    data.forEach(rutina => {
+
+        contenedor.innerHTML += `
+            <div class="dieta-card">
+
+                <h3 style="color:#d4af37;">
+                    ${rutina.cliente?.nombre || "Sin nombre"}
+                </h3>
+
+                <p style="opacity:0.8;">
+                    🏋️ ${rutina.cliente?.diasGym || '-'} días
+                </p>
+
+                <div style="margin-top:15px; display:flex; gap:10px;">
+
+                    <button onclick="verRutina(${rutina.id})" class="btn-ver">
+                        👁 Ver
+                    </button>
+
+                    <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">
+                        🗑 Eliminar
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+}  
 </script>
 
 </body>
