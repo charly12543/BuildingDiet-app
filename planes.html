@@ -123,17 +123,9 @@ async function verPlan(id) {
     document.getElementById("visor").innerHTML = plan.html;
 }
 
-// RUTINA (se queda igual)
-async function verRutina(id) {
-    const res = await fetch(`${API}/${id}`);
-    const rutina = await res.json();
-
-    document.getElementById("visor").innerHTML = rutina.rutinaHtml;
-}
-
  /* ===================== FUNCION VER RUTINA ===================== */      
 async function verRutina(id) {
-    const res = await fetch(`${API}/${id}`);
+    const res = await fetch(`${API}/rutinas/${id}`);
     const rutina = await res.json();
 
     document.getElementById("visor").innerHTML = rutina.rutinaHtml;
@@ -142,6 +134,7 @@ async function verRutina(id) {
 
 /* ===================== CARGA DE FUNCIONES ===================== */      
 cargarPlanes();
+  data.reverse();
 cargarRutinas();
 
 /* ===================== FUNCION RUTINAS ===================== */    
