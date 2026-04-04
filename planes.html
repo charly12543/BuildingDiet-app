@@ -30,42 +30,47 @@
 </section>
 
 <input type="text" id="busqueda" placeholder="Buscar por ID o nombre">
-<button onclick="buscar()">Buscar</button>
 
 <!-- CONTENEDOR -->
 <section>
   <div id="contenedor-planes" style="display:flex; flex-direction:column; gap:20px;"></div>
-<h2 style="margin-top:40px;">🏋️ Rutinas generadas</h2>
-<div id="contenedor-rutinas" style="display:flex; flex-direction:column; gap:20px;"></div>
 
-<h2 style="margin-top:40px;">👁️ Visor</h2>
-<div id="visor" style="background:#fff; color:#000; padding:20px; border-radius:10px;">
-  Selecciona un plan o rutina
-</div>
+  <h2 style="margin-top:40px;">🏋️ Rutinas generadas</h2>
+  <div id="contenedor-rutinas" style="display:flex; flex-direction:column; gap:20px;"></div>
+
+  <h2 style="margin-top:40px;">👁️ Visor</h2>
+  <div id="visor" style="background:#fff; color:#000; padding:20px; border-radius:10px;">
+    Selecciona un plan o rutina
+  </div>
 </section>
 
+<!-- PAGINACION -->
+<div style="margin-top:20px;">
+  <button onclick="paginaAnterior()">⬅</button>
+  <span id="pagina-info">Página 1</span>
+  <button onclick="paginaSiguiente()">➡</button>
+</div>
 
-
-<!-- SCRIPTS  -->  
 <script>
-/* ===================== FUNCION INTELIGENTE ===================== */    
 const API = "http://localhost:8080/api";
 
-/* ===================== FUNCION CARGAR PLANES===================== */        
-async function cargarPlanes() {
-    const res = await fetch(`${API}/planes`);
+/* ===================== VARIABLES ===================== */
+let paginaActual = 0;
+let totalPaginas = 0;
+
+/* ===================== PLANES ===================== */
+async function cargarPlanes(page = 0) {
+    const res = await fetch(`${API}/planes?page=${page}&size=10`);
     const data = await res.json();
 
-     data.reverse();
+    totalPaginas = data.totalPages;
 
     const contenedor = document.getElementById("contenedor-planes");
     contenedor.innerHTML = "";
 
-    data.forEach(plan => {
-
+    data.content.forEach(plan => {
         contenedor.innerHTML += `
             <div class="dieta-card">
-
                 <h3 style="color:#d4af37;">
                     ${plan.cliente?.nombre || "Sin nombre"}
                 </h3>
@@ -82,7 +87,6 @@ async function cargarPlanes() {
                 </div>
 
                 <div style="margin-top:15px; display:flex; gap:10px;">
-
                     <button onclick="verPlan(${plan.id})" class="btn-ver">
                         👁 Ver
                     </button>
@@ -90,57 +94,81 @@ async function cargarPlanes() {
                     <button onclick="eliminarPlan(${plan.id})" class="btn-delete">
                         🗑 Eliminar
                     </button>
-
                 </div>
+            </div>
+        `;
+    });
 
+    actualizarPaginaUI();
+}
+
+/* ===================== RUTINAS ===================== */
+async function cargarRutinas(page = 0) {
+    const res = await fetch(`${API}/rutinas?page=${page}&size=10`);
+    const data = await res.json();
+
+    const contenedor = document.getElementById("contenedor-rutinas");
+    contenedor.innerHTML = "";
+
+    data.content.forEach(rutina => {
+        contenedor.innerHTML += `
+            <div class="dieta-card">
+                <h3 style="color:#d4af37;">
+                    ${rutina.cliente?.nombre || "Sin nombre"}
+                </h3>
+
+                <p style="opacity:0.8;">
+                    🏋️ ${rutina.cliente?.diasGym || '-'} días
+                </p>
+
+                <div style="margin-top:15px; display:flex; gap:10px;">
+                    <button onclick="verRutina(${rutina.id})" class="btn-ver">
+                        👁 Ver
+                    </button>
+
+                    <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">
+                        🗑 Eliminar
+                    </button>
+                </div>
             </div>
         `;
     });
 }
 
-/* ===================== FUNCION ELIMINAR PLAN===================== */      
-async function eliminarPlan(id) {
-    if (!confirm("¿Seguro que quieres eliminar este plan?")) return;
-
-    await fetch(`${API}/planes/${id}`, {
-        method: "DELETE"
-    });
-
-    cargarPlanes();
-}
-
-/* ===================== FUNCION ELIMINAR RUTINA ===================== */        
-async function eliminarRutina(id) {
-    if (!confirm("¿Eliminar rutina?")) return;
-
-    await fetch(`${API}/rutinas/${id}`, {
-        method: "DELETE"
-    });
-
-    cargarRutinas();
-}  
-  
-/* ===================== FUNCION VER PLAN ===================== */    
+/* ===================== VER ===================== */
 async function verPlan(id) {
     const res = await fetch(`${API}/planes/${id}`);
     const plan = await res.json();
-
     document.getElementById("visor").innerHTML = plan.html;
 }
 
- /* ===================== FUNCION VER RUTINA ===================== */      
 async function verRutina(id) {
     const res = await fetch(`${API}/rutinas/${id}`);
     const rutina = await res.json();
-document.getElementById("visor").innerHTML = rutina.rutinaHtml;
+    document.getElementById("visor").innerHTML = rutina.rutinaHtml;
 }
 
-/* ===================== FUNCION BUSCAR ===================== */      
+/* ===================== ELIMINAR ===================== */
+async function eliminarPlan(id) {
+    if (!confirm("¿Eliminar plan?")) return;
+
+    await fetch(`${API}/planes/${id}`, { method: "DELETE" });
+    cargarPlanes(paginaActual);
+}
+
+async function eliminarRutina(id) {
+    if (!confirm("¿Eliminar rutina?")) return;
+
+    await fetch(`${API}/rutinas/${id}`, { method: "DELETE" });
+    cargarRutinas(paginaActual);
+}
+
+/* ===================== BUSCAR ===================== */
 async function buscar(){
     let q = document.getElementById("busqueda").value;
 
     if(q === ""){
-        cargarPlanes(); // 🔥 vuelve a cargar todo
+        cargarPlanes(paginaActual);
         return;
     }
 
@@ -159,34 +187,28 @@ async function buscar(){
         `;
     });
 }
-/* ===================== FUNCION RUTINAS ===================== */    
-async function cargarRutinas() {
-    const res = await fetch(`${API}/list`);
-    const data = await res.json();
 
-    const contenedor = document.getElementById("contenedor-rutinas");
-    contenedor.innerHTML = "";
-    data.forEach(rutina => {
-    contenedor.innerHTML += `
-    <div class="dieta-card">
-   <h3 style="color:#d4af37;">
-  ${rutina.cliente?.nombre || "Sin nombre"}
-   </h3>
-   <p style="opacity:0.8;">
-    🏋️ ${rutina.cliente?.diasGym || '-'} días
-  </p>
-  <div style="margin-top:15px; display:flex; gap:10px;">
-  <button onclick="verRutina(${rutina.id})" class="btn-ver">
-   👁 Ver
-   </button>
-    <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">
-    🗑 Eliminar
-    </button>
-     </div>
-      </div>
-       `;
-    });
-}  
+/* ===================== PAGINACION ===================== */
+function paginaSiguiente(){
+    if(paginaActual < totalPaginas - 1){
+        paginaActual++;
+        cargarPlanes(paginaActual);
+        cargarRutinas(paginaActual);
+    }
+}
+
+function paginaAnterior(){
+    if(paginaActual > 0){
+        paginaActual--;
+        cargarPlanes(paginaActual);
+        cargarRutinas(paginaActual);
+    }
+}
+
+function actualizarPaginaUI(){
+    document.getElementById("pagina-info").innerText = `Página ${paginaActual + 1}`;
+}
+
 /* ===================== INIT ===================== */
 async function init(){
     await cargarPlanes();
@@ -194,9 +216,10 @@ async function init(){
 }
 
 init();
-/* ===================== EVENTO BUSQUEDA ===================== */
+
+/* ===================== EVENTO ===================== */
 document.getElementById("busqueda").addEventListener("input", buscar);
-  
+
 </script>
 
 </body>
