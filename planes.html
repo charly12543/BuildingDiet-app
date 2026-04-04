@@ -29,6 +29,9 @@
   <p>Administra, visualiza y elimina planes fácilmente</p>
 </section>
 
+<input type="text" id="busqueda" placeholder="Buscar por ID o nombre">
+<button onclick="buscar()">Buscar</button>
+
 <!-- CONTENEDOR -->
 <section>
   <div id="contenedor-planes" style="display:flex; flex-direction:column; gap:20px;"></div>
@@ -127,8 +130,16 @@ async function verPlan(id) {
 async function verRutina(id) {
     const res = await fetch(`${API}/rutinas/${id}`);
     const rutina = await res.json();
+document.getElementById("visor").innerHTML = rutina.rutinaHtml;
+}
 
-    document.getElementById("visor").innerHTML = rutina.rutinaHtml;
+async function eliminarRutina(id) {
+if (!confirm("¿Eliminar rutina?")) return;
+await fetch(`${API}/rutinas/${id}`, {
+        method: "DELETE"
+    });
+  cargarRutinas();
+     data.reverse();
 }
 
 
@@ -136,6 +147,21 @@ async function verRutina(id) {
 cargarPlanes();
   data.reverse();
 cargarRutinas();
+
+/* ===================== FUNCION BUSCAR ===================== */      
+async function buscar(){
+    let q = document.getElementById("busqueda").value;
+
+    const res = await fetch(`${API}/planes/buscar?q=${q}`);
+    const data = await res.json();
+
+    const contenedor = document.getElementById("contenedor-planes");
+    contenedor.innerHTML = "";
+
+    data.forEach(plan => {
+        contenedor.innerHTML += `...`;
+    });
+}  
 
 /* ===================== FUNCION RUTINAS ===================== */    
 async function cargarRutinas() {
