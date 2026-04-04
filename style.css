@@ -343,7 +343,67 @@ section{ padding:60px 20px; max-width:800px; margin:auto; }
   transform:scale(1.05);
 }
 
+/* ===== BUSCADOR ===== */
+.buscador-box{
+  display:flex;
+  gap:10px;
+  margin:20px auto;
+  max-width:500px;
+}
 
+.buscador-box input{
+  flex:1;
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  background:#111;
+  color:white;
+  font-size:16px;
+}
+
+.buscador-box button{
+  padding:14px 20px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,#d4af37,#f5d76e);
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.buscador-box button:hover{
+  transform:scale(1.05);
+}
+
+/* ===== PAGINACION ===== */
+.paginacion{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:15px;
+  margin:30px 0;
+}
+
+.paginacion button{
+  padding:10px 18px;
+  border:none;
+  border-radius:10px;
+  background:#1c1c1c;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.paginacion button:hover{
+  background:#d4af37;
+  color:black;
+}
+
+#pagina-info{
+  font-weight:bold;
+  color:#d4af37;
+}
 
 
 
