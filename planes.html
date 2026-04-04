@@ -135,15 +135,6 @@ async function verRutina(id) {
 document.getElementById("visor").innerHTML = rutina.rutinaHtml;
 }
 
-async function eliminarRutina(id) {
-if (!confirm("¿Eliminar rutina?")) return;
-await fetch(`${API}/rutinas/${id}`, {
-        method: "DELETE"
-    });
-  cargarRutinas();
-     data.reverse();
-}
-
 /* ===================== FUNCION BUSCAR ===================== */      
 async function buscar(){
     let q = document.getElementById("busqueda").value;
@@ -197,8 +188,12 @@ async function cargarRutinas() {
     });
 }  
 /* ===================== INIT ===================== */
-cargarPlanes();
-cargarRutinas();  
+async function init(){
+    await cargarPlanes();
+    await cargarRutinas();
+}
+
+init();
 /* ===================== EVENTO BUSQUEDA ===================== */
 document.getElementById("busqueda").addEventListener("input", buscar);
   
