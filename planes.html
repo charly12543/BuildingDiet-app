@@ -8,44 +8,43 @@
 
 <body>
 
-<!-- NAVBAR -->  
 <nav class="navbar">
   <div class="nav-container">
     <a href="index.html" class="logo">
-      <img src="images/logoGitHub.png" alt="Charly Fitness">
+      <img src="images/logoGitHub.png">
     </a>
-
-    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-
-    <ul class="nav-links" id="navLinks">
+    <div class="menu-toggle">☰</div>
+    <ul class="nav-links">
        <li><a href="index.html" class="btn-main">🥗 Inicio</a></li>     
     </ul>
   </div>
 </nav> 
 
-<!-- HERO -->
 <section class="hero">
   <h1>📋 Planes generados</h1>
   <p>Administra, visualiza y elimina planes fácilmente</p>
 </section>
 
-<input type="text" id="busqueda" placeholder="Buscar por ID o nombre">
+<!-- 🔍 BUSQUEDA -->
+<div class="busqueda-box">
+  <input type="text" id="busqueda" placeholder="Buscar por ID o nombre">
+  <button onclick="buscar()">🔍 Buscar</button>
+</div>
 
-<!-- CONTENEDOR -->
 <section>
-  <div id="contenedor-planes" style="display:flex; flex-direction:column; gap:20px;"></div>
+  <div id="contenedor-planes"></div>
 
-  <h2 style="margin-top:40px;">🏋️ Rutinas generadas</h2>
-  <div id="contenedor-rutinas" style="display:flex; flex-direction:column; gap:20px;"></div>
+  <h2>🏋️ Rutinas generadas</h2>
+  <div id="contenedor-rutinas"></div>
 
-  <h2 style="margin-top:40px;">👁️ Visor</h2>
-  <div id="visor" style="background:#fff; color:#000; padding:20px; border-radius:10px;">
+  <h2>👁️ Visor</h2>
+  <div id="visor" class="visor-box">
     Selecciona un plan o rutina
   </div>
 </section>
 
 <!-- PAGINACION -->
-<div style="margin-top:20px;">
+<div class="paginacion">
   <button onclick="paginaAnterior()">⬅</button>
   <span id="pagina-info">Página 1</span>
   <button onclick="paginaSiguiente()">➡</button>
@@ -54,7 +53,6 @@
 <script>
 const API = "http://localhost:8080/api";
 
-/* ===================== VARIABLES ===================== */
 let paginaActual = 0;
 let totalPaginas = 0;
 
@@ -71,29 +69,19 @@ async function cargarPlanes(page = 0) {
     data.content.forEach(plan => {
         contenedor.innerHTML += `
             <div class="dieta-card">
-                <h3 style="color:#d4af37;">
-                    ${plan.cliente?.nombre || "Sin nombre"}
-                </h3>
+                <h3>${plan.cliente?.nombre || "Sin nombre"}</h3>
+                <p>📅 ${plan.fecha}</p>
 
-                <p style="opacity:0.8;">
-                    📅 ${plan.fecha}
-                </p>
-
-                <div style="margin-top:10px;">
-                    🔥 ${plan.calorias || '-'} kcal |
+                <div>
+                    🔥 ${plan.calorias || '-'} |
                     🥩 ${plan.proteina || '-'} |
                     🍚 ${plan.carbos || '-'} |
                     🥑 ${plan.grasa || '-'}
                 </div>
 
-                <div style="margin-top:15px; display:flex; gap:10px;">
-                    <button onclick="verPlan(${plan.id})" class="btn-ver">
-                        👁 Ver
-                    </button>
-
-                    <button onclick="eliminarPlan(${plan.id})" class="btn-delete">
-                        🗑 Eliminar
-                    </button>
+                <div class="acciones">
+                    <button onclick="verPlan(${plan.id})">👁 Ver</button>
+                    <button onclick="eliminarPlan(${plan.id})">🗑</button>
                 </div>
             </div>
         `;
@@ -113,22 +101,12 @@ async function cargarRutinas(page = 0) {
     data.content.forEach(rutina => {
         contenedor.innerHTML += `
             <div class="dieta-card">
-                <h3 style="color:#d4af37;">
-                    ${rutina.cliente?.nombre || "Sin nombre"}
-                </h3>
+                <h3>${rutina.cliente?.nombre || "Sin nombre"}</h3>
+                <p>🏋️ ${rutina.cliente?.diasGym || '-'} días</p>
 
-                <p style="opacity:0.8;">
-                    🏋️ ${rutina.cliente?.diasGym || '-'} días
-                </p>
-
-                <div style="margin-top:15px; display:flex; gap:10px;">
-                    <button onclick="verRutina(${rutina.id})" class="btn-ver">
-                        👁 Ver
-                    </button>
-
-                    <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">
-                        🗑 Eliminar
-                    </button>
+                <div class="acciones">
+                    <button onclick="verRutina(${rutina.id})">👁 Ver</button>
+                    <button onclick="eliminarRutina(${rutina.id})">🗑</button>
                 </div>
             </div>
         `;
@@ -145,20 +123,22 @@ async function verPlan(id) {
 async function verRutina(id) {
     const res = await fetch(`${API}/rutinas/${id}`);
     const rutina = await res.json();
-    document.getElementById("visor").innerHTML = rutina.rutinaHtml;
+
+    console.log(rutina); // 🔥 DEBUG por si falla
+
+    document.getElementById("visor").innerHTML =
+        rutina.rutinaHtml || "<p>No hay rutina</p>";
 }
 
 /* ===================== ELIMINAR ===================== */
 async function eliminarPlan(id) {
     if (!confirm("¿Eliminar plan?")) return;
-
     await fetch(`${API}/planes/${id}`, { method: "DELETE" });
     cargarPlanes(paginaActual);
 }
 
 async function eliminarRutina(id) {
     if (!confirm("¿Eliminar rutina?")) return;
-
     await fetch(`${API}/rutinas/${id}`, { method: "DELETE" });
     cargarRutinas(paginaActual);
 }
@@ -182,7 +162,7 @@ async function buscar(){
         contenedor.innerHTML += `
             <div class="dieta-card">
                 <h3>${plan.cliente?.nombre}</h3>
-                <button onclick="verPlan(${plan.id})">Ver</button>
+                <button onclick="verPlan(${plan.id})">👁 Ver</button>
             </div>
         `;
     });
@@ -206,7 +186,8 @@ function paginaAnterior(){
 }
 
 function actualizarPaginaUI(){
-    document.getElementById("pagina-info").innerText = `Página ${paginaActual + 1}`;
+    document.getElementById("pagina-info").innerText =
+        `Página ${paginaActual + 1}`;
 }
 
 /* ===================== INIT ===================== */
@@ -217,9 +198,11 @@ async function init(){
 
 init();
 
-/* ===================== EVENTO ===================== */
-document.getElementById("busqueda").addEventListener("input", buscar);
-
+/* ENTER para buscar */
+document.getElementById("busqueda")
+.addEventListener("keypress", function(e){
+    if(e.key === "Enter") buscar();
+});
 </script>
 
 </body>
