@@ -493,7 +493,9 @@ let mensajeCoach = generarMensajeCoach(dieta, datos);
 }
 
 /* ===================== DESCARGAR PDF ===================== */
+/* ===================== DESCARGAR PDF FIX PRO ===================== */
 async function descargarPDF(tipo){
+
   const { jsPDF } = window.jspdf;
   const elemento = document.getElementById("resultadoPRO");
 
@@ -504,8 +506,35 @@ async function descargarPDF(tipo){
 
   let nombre = document.getElementById("nombreCliente").value || "Cliente";
 
-  let editable = elemento.querySelector(".dieta-card");
-  if(editable) editable.setAttribute("contenteditable", "false");
+  // 🔥 CLON LIMPIO (clave para evitar bugs)
+  let clon = elemento.cloneNode(true);
+
+  clon.style.background = "#ffffff";
+  clon.style.color = "#000";
+  clon.style.padding = "20px";
+  clon.style.width = "800px";
+  clon.style.boxSizing = "border-box";
+  clon.style.position = "absolute";
+  clon.style.left = "-9999px";
+
+  // 🔥 eliminar sombras pesadas (rompen canvas)
+  clon.querySelectorAll("*").forEach(el => {
+    el.style.boxShadow = "none";
+    el.style.textShadow = "none";
+  });
+
+  // 🔥 quitar emojis (evita errores)
+  clon.innerHTML = clon.innerHTML.replace(/[\u{1F300}-\u{1F6FF}]/gu, "");
+
+  document.body.appendChild(clon);
+
+  const canvas = await html2canvas(clon, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff"
+  });
+
+  document.body.removeChild(clon);
 
   const pdf = new jsPDF("p", "mm", "a4");
 
@@ -513,106 +542,49 @@ async function descargarPDF(tipo){
   const pageHeight = 297;
 
   const margin = 10;
-  const headerHeight = 18;
-
   const usableWidth = pageWidth - margin * 2;
-  const usableHeight = pageHeight - margin * 2 - headerHeight - 10;
-
-  // 🔥 CLON
-  let clon = elemento.cloneNode(true);
-
-  clon.style.background = "white";
-  clon.style.padding = "20px";
-  clon.style.width = "794px";
-  clon.style.boxSizing = "border-box";
-  clon.style.position = "absolute";
-  clon.style.left = "-9999px";
-
-  // 🔥 LIMPIAR EMOJIS (NO ROMPE NADA)
-  clon.innerHTML = clon.innerHTML.replace(/🍽️|🥩|🍚|🥑|💎|🔥|📌|🚫|✔|➕|🏋️|😴|💧/g, '');
-
-  document.body.appendChild(clon);
-
-  const canvas = await html2canvas(clon, {
-    scale: 3, // 🔥 mejor calidad
-    useCORS: true,
-    scrollY: -window.scrollY
-  });
-
-  document.body.removeChild(clon);
 
   const imgWidth = usableWidth;
   const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-  const pageHeightPx = (canvas.width * usableHeight) / usableWidth;
-  const pageHeightPxInt = Math.floor(pageHeightPx || 0);
-
-  if(pageHeightPxInt <= 0){
-    alert("Error generando PDF bro");
-    return;
-  }
-
   let position = 0;
-  let page = 0;
 
   // 🔥 LOGO
   let logo = new Image();
-  logo.src = "imagenes/logoGitHub.png";
+  logo.src = "images/logoGitHub.png";
+
   await new Promise(resolve => logo.onload = resolve);
 
-  while(position < canvas.height){
+  while(position < imgHeight){
 
-    let pageCanvas = document.createElement("canvas");
-    let ctx = pageCanvas.getContext("2d");
-
-    pageCanvas.width = canvas.width;
-    pageCanvas.height = pageHeightPxInt;
-
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-
-    ctx.drawImage(
-      canvas,
-      0, position,
-      canvas.width, pageHeightPxInt,
-      0, 0,
-      canvas.width, pageHeightPxInt
-    );
-
-    let imgData = pageCanvas.toDataURL("image/jpeg", 0.95);
-
-    if(page > 0) pdf.addPage();
+    if(position > 0){
+      pdf.addPage();
+    }
 
     // HEADER
-    pdf.setFillColor(10,10,10);
-    pdf.rect(0,0,pageWidth,headerHeight,"F");
+    pdf.setFillColor(0,0,0);
+    pdf.rect(0,0,pageWidth,15,"F");
 
-    pdf.addImage(logo, "PNG", 10, 3, 28, 12);
+    pdf.addImage(logo, "PNG", 10, 2, 25, 10);
 
     pdf.setTextColor(212,175,55);
-    pdf.setFont("helvetica","bold");
     pdf.setFontSize(10);
-    pdf.text("Plan personalizado por Charly Fitness", pageWidth - 10, 11, null, null, "right");
+    pdf.text("Charly Fitness", pageWidth - 10, 10, null, null, "right");
 
-    // CONTENIDO
     pdf.addImage(
-      imgData,
-      "JPEG",
+      canvas,
+      "PNG",
       margin,
-      headerHeight + 4,
+      20 - position,
       imgWidth,
-      usableHeight
+      imgHeight
     );
 
-    position += pageHeightPxInt;
-    page++;
+    position += pageHeight - 20;
   }
 
-  pdf.save(nombre + "_Plan_Pro.pdf");
-
-  if(editable) editable.setAttribute("contenteditable", "true");
+  pdf.save(nombre + "_" + tipo + ".pdf");
 }
-
   
 /* ===================== RUTINA ===================== */
 function generarRutina(){
