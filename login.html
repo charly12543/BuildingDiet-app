@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Charly Fitness</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* 🔥 LOGIN MODERNO */
+.login-container{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#0b0b0b,#1c1c1c);
+}
+
+.login-box{
+  background:#111;
+  padding:40px;
+  border-radius:20px;
+  width:100%;
+  max-width:400px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.8);
+  border:1px solid rgba(212,175,55,0.3);
+  text-align:center;
+}
+
+.login-box h2{
+  color:#d4af37;
+  margin-bottom:20px;
+}
+
+.login-box input{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border-radius:10px;
+  border:none;
+  background:#1c1c1c;
+  color:white;
+  font-size:16px;
+}
+
+.login-box button{
+  width:100%;
+  padding:14px;
+  margin-top:15px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,#d4af37,#f5d76e);
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.login-box button:hover{
+  transform:scale(1.05);
+}
+
+.error{
+  color:#ff4d4d;
+  margin-top:10px;
+  font-size:14px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="login-container">
+  <div class="login-box">
+
+    <h2>🔐 Login</h2>
+
+    <input type="text" id="usuario" placeholder="Usuario">
+    <input type="password" id="password" placeholder="Contraseña">
+
+    <button onclick="login()">Entrar</button>
+
+    <p id="error" class="error"></p>
+
+  </div>
+</div>
+
+<script>
+const API = "http://localhost:8080/api";
+
+/* ===================== LOGIN ===================== */
+async function login(){
+  let usuario = document.getElementById("usuario").value;
+  let password = document.getElementById("password").value;
+
+  if(!usuario || !password){
+    mostrarError("Completa los datos");
+    return;
+  }
+
+  try{
+    const res = await fetch(`${API}/login`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify({usuario,password})
+    });
+
+    if(!res.ok){
+      mostrarError("Credenciales incorrectas");
+      return;
+    }
+
+    const data = await res.json();
+
+    // 🔥 Guardar token
+    localStorage.setItem("token", data.token);
+
+    // 🔥 Redirigir
+    window.location.href = "index.html";
+
+  }catch(e){
+    console.error(e);
+    mostrarError("Error de conexión");
+  }
+}
+
+function mostrarError(msg){
+  document.getElementById("error").innerText = msg;
+}
+
+/* ENTER LOGIN */
+document.addEventListener("keypress", function(e){
+  if(e.key === "Enter") login();
+});
+</script>
+
+</body>
+</html>
