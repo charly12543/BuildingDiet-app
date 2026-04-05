@@ -7,6 +7,51 @@ html, body{ overflow-x:hidden; }
   overflow-y: auto;
 }
 
+.tabs{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:20px;
+}
+
+.tab-btn{
+  padding:10px 20px;
+  border:none;
+  border-radius:10px;
+  background:#1c1c1c;
+  color:white;
+  cursor:pointer;
+}
+
+.tab-btn.active{
+  background:#d4af37;
+  color:black;
+}
+
+.filtros-box{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin:20px;
+}
+
+.filtros-box input,
+.filtros-box select{
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:#111;
+  color:white;
+}
+
+.filtros-box button{
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#d4af37;
+  cursor:pointer;
+}
+
 /* ===== TABS ===== */
 .tabs{
   display:flex;
