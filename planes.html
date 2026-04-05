@@ -26,7 +26,7 @@
 </section>
 
 <!-- 🔍 BUSQUEDA -->
-<div class="busqueda-box">
+<div class="buscador-box">
   <input type="text" id="busqueda" placeholder="Buscar por ID o nombre">
   <button onclick="buscar()">🔍 Buscar</button>
 </div>
@@ -69,7 +69,10 @@ async function cargarPlanes(page = 0) {
     data.content.forEach(plan => {
         contenedor.innerHTML += `
             <div class="dieta-card">
-                <h3>${plan.cliente?.nombre || "Sin nombre"}</h3>
+                <h3 style="color:#d4af37;">
+                    ${plan.cliente?.nombre || "Sin nombre"}
+                </h3>
+
                 <p>📅 ${plan.fecha}</p>
 
                 <div>
@@ -79,9 +82,9 @@ async function cargarPlanes(page = 0) {
                     🥑 ${plan.grasa || '-'}
                 </div>
 
-                <div class="acciones">
-                    <button onclick="verPlan(${plan.id})">👁 Ver</button>
-                    <button onclick="eliminarPlan(${plan.id})">🗑</button>
+                <div style="margin-top:10px; display:flex; gap:10px;">
+                    <button onclick="verPlan(${plan.id})" class="btn-ver">👁 Ver</button>
+                    <button onclick="eliminarPlan(${plan.id})" class="btn-delete">🗑</button>
                 </div>
             </div>
         `;
@@ -101,12 +104,15 @@ async function cargarRutinas(page = 0) {
     data.content.forEach(rutina => {
         contenedor.innerHTML += `
             <div class="dieta-card">
-                <h3>${rutina.cliente?.nombre || "Sin nombre"}</h3>
+                <h3 style="color:#d4af37;">
+                    ${rutina.cliente?.nombre || "Sin nombre"}
+                </h3>
+
                 <p>🏋️ ${rutina.cliente?.diasGym || '-'} días</p>
 
-                <div class="acciones">
-                    <button onclick="verRutina(${rutina.id})">👁 Ver</button>
-                    <button onclick="eliminarRutina(${rutina.id})">🗑</button>
+                <div style="margin-top:10px; display:flex; gap:10px;">
+                    <button onclick="verRutina(${rutina.id})" class="btn-ver">👁 Ver</button>
+                    <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">🗑</button>
                 </div>
             </div>
         `;
@@ -123,11 +129,7 @@ async function verPlan(id) {
 async function verRutina(id) {
     const res = await fetch(`${API}/rutinas/${id}`);
     const rutina = await res.json();
-
-    console.log(rutina); // 🔥 DEBUG por si falla
-
-    document.getElementById("visor").innerHTML =
-        rutina.rutinaHtml || "<p>No hay rutina</p>";
+    document.getElementById("visor").innerHTML = rutina.rutinaHtml;
 }
 
 /* ===================== ELIMINAR ===================== */
@@ -149,6 +151,7 @@ async function buscar(){
 
     if(q === ""){
         cargarPlanes(paginaActual);
+        cargarRutinas(paginaActual);
         return;
     }
 
@@ -158,14 +161,26 @@ async function buscar(){
     const contenedor = document.getElementById("contenedor-planes");
     contenedor.innerHTML = "";
 
+    if(data.length === 0){
+        contenedor.innerHTML = "<p>No se encontraron resultados</p>";
+        return;
+    }
+
     data.forEach(plan => {
         contenedor.innerHTML += `
             <div class="dieta-card">
-                <h3>${plan.cliente?.nombre}</h3>
-                <button onclick="verPlan(${plan.id})">👁 Ver</button>
+                <h3 style="color:#d4af37;">
+                    ${plan.cliente?.nombre || "Sin nombre"}
+                </h3>
+
+                <button onclick="verPlan(${plan.id})" class="btn-ver">
+                    👁 Ver
+                </button>
             </div>
         `;
     });
+
+    document.getElementById("contenedor-rutinas").innerHTML = "";
 }
 
 /* ===================== PAGINACION ===================== */
@@ -198,7 +213,7 @@ async function init(){
 
 init();
 
-/* ENTER para buscar */
+/* 🔥 ENTER PARA BUSCAR (BIEN UBICADO) */
 document.getElementById("busqueda")
 .addEventListener("keypress", function(e){
     if(e.key === "Enter") buscar();
