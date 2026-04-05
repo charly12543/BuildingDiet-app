@@ -282,5 +282,22 @@ function logout(){
 }  
 </script>
 
+  <script>
+/* 🔒 VALIDAR LOGIN */
+if(!localStorage.getItem("token")){
+  window.location.replace("login.html");
+}
+
+/* 👤 MOSTRAR USUARIO */
+document.addEventListener("DOMContentLoaded", () => {
+  let usuario = localStorage.getItem("usuario");
+
+  if(usuario){
+    document.getElementById("usuarioNav").innerHTML =
+      `👤 <span style="color:#d4af37;">${usuario}</span>`;
+  }
+});
+</script>
+
 </body>
 </html>
