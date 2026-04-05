@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Planes - Charly Fitness</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Panel - Charly Fitness</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -13,16 +13,12 @@
     <a href="index.html" class="logo">
       <img src="images/logoGitHub.png">
     </a>
-    <div class="menu-toggle">☰</div>
-    <ul class="nav-links">
-       <li><a href="index.html" class="btn-main">🥗 Inicio</a></li>     
-    </ul>
   </div>
-</nav> 
+</nav>
 
 <section class="hero">
-  <h1>📋 Panel de Planes</h1>
-  <p>Modo profesional activado 🔥</p>
+  <h1>📋 Panel Profesional</h1>
+  <p>Gestión de dietas y rutinas</p>
 </section>
 
 <!-- 🔥 TABS -->
@@ -31,28 +27,34 @@
   <button class="tab-btn" onclick="cambiarTab('rutinas')">🏋️ Rutinas</button>
 </div>
 
-<!-- 🔍 BUSQUEDA -->
-<div class="busqueda-box">
-  <input type="text" id="busqueda" placeholder="Buscar por ID o nombre">
-  <button onclick="buscar()">🔍 Buscar</button>
+<!-- 🔍 FILTROS -->
+<div class="filtros-box">
+  <input type="text" id="busqueda" placeholder="Buscar cliente...">
+  
+  <select id="orden" onchange="ordenar()">
+    <option value="asc">Nombre A-Z</option>
+    <option value="desc">Nombre Z-A</option>
+  </select>
+
+  <button onclick="exportarPDF()">📄 Exportar</button>
 </div>
 
 <section>
 
-  <!-- DIETAS -->
-  <div id="tab-dietas" class="tab-content">
-    <div id="contenedor-dietas"></div>
-  </div>
+<!-- DIETAS -->
+<div id="tab-dietas">
+  <div id="contenedor-dietas"></div>
+</div>
 
-  <!-- RUTINAS -->
-  <div id="tab-rutinas" class="tab-content" style="display:none;">
-    <div id="contenedor-rutinas"></div>
-  </div>
+<!-- RUTINAS -->
+<div id="tab-rutinas" style="display:none;">
+  <div id="contenedor-rutinas"></div>
+</div>
 
-  <h2>👁️ Visor</h2>
-  <div id="visor" class="visor-box">
-    Selecciona un plan o rutina
-  </div>
+<h2>👁️ Visor</h2>
+<div id="visor" class="visor-box">
+Selecciona un plan o rutina
+</div>
 
 </section>
 
@@ -71,15 +73,22 @@ let totalPaginasDietas = 0;
 let totalPaginasRutinas = 0;
 let tabActual = "dietas";
 
-/* ===================== CAMBIAR TAB ===================== */
-function cambiarTab(tab){
+let listaDietas = [];
+let listaRutinas = [];
 
+/* ================= TAB ================= */
+function cambiarTab(tab){
   tabActual = tab;
 
-  document.getElementById("tab-dietas").style.display = tab === "dietas" ? "block" : "none";
-  document.getElementById("tab-rutinas").style.display = tab === "rutinas" ? "block" : "none";
+  document.getElementById("tab-dietas").style.display =
+    tab === "dietas" ? "block" : "none";
 
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.getElementById("tab-rutinas").style.display =
+    tab === "rutinas" ? "block" : "none";
+
+  document.querySelectorAll(".tab-btn")
+    .forEach(btn => btn.classList.remove("active"));
+
   event.target.classList.add("active");
 
   paginaActual = 0;
@@ -91,174 +100,169 @@ function cambiarTab(tab){
   }
 }
 
-/* ===================== DIETAS ===================== */
-async function cargarDietas(page = paginaActual){
-    const res = await fetch(`${API}/planes?page=${page}&size=10`);
-    const data = await res.json();
+/* ================= DIETAS ================= */
+async function cargarDietas(){
+  const res = await fetch(`${API}/planes?page=${paginaActual}&size=10`);
+  const data = await res.json();
 
-    totalPaginasDietas = data.totalPages;
+  listaDietas = data.content;
+  totalPaginasDietas = data.totalPages;
 
-    const contenedor = document.getElementById("contenedor-dietas");
-    contenedor.innerHTML = "";
-
-    data.content.forEach(plan => {
-        contenedor.innerHTML += `
-            <div class="dieta-card">
-                <h3 style="color:#d4af37;">${plan.cliente?.nombre}</h3>
-                <p>📅 ${plan.fecha}</p>
-
-                <div class="acciones">
-                    <button onclick="verPlan(${plan.id})" class="btn-ver">👁 Ver</button>
-                    <button onclick="eliminarPlan(${plan.id})" class="btn-delete">🗑</button>
-                </div>
-            </div>
-        `;
-    });
-
-    actualizarPaginaUI();
+  renderDietas(listaDietas);
 }
 
-/* ===================== RUTINAS ===================== */
-async function cargarRutinas(page = paginaActual){
-    const res = await fetch(`${API}/rutinas?page=${page}&size=10`);
-    const data = await res.json();
+/* ================= RUTINAS ================= */
+async function cargarRutinas(){
+  const res = await fetch(`${API}/rutinas?page=${paginaActual}&size=10`);
+  const data = await res.json();
 
-    totalPaginasRutinas = data.totalPages;
+  listaRutinas = data.content;
+  totalPaginasRutinas = data.totalPages;
 
-    const contenedor = document.getElementById("contenedor-rutinas");
-    contenedor.innerHTML = "";
-
-    data.content.forEach(rutina => {
-        contenedor.innerHTML += `
-            <div class="dieta-card">
-                <h3 style="color:#4dd0e1;">${rutina.cliente?.nombre}</h3>
-                <p>🏋️ ${rutina.cliente?.diasGym || '-'} días</p>
-
-                <div class="acciones">
-                    <button onclick="verRutina(${rutina.id})" class="btn-ver">Ver rutina</button>
-                    <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">🗑</button>
-                </div>
-            </div>
-        `;
-    });
-
-    actualizarPaginaUI();
+  renderRutinas(listaRutinas);
 }
 
-/* ===================== VER ===================== */
+/* ================= RENDER ================= */
+function renderDietas(lista){
+  const c = document.getElementById("contenedor-dietas");
+  c.innerHTML = "";
+
+  lista.forEach(p => {
+    c.innerHTML += `
+      <div class="dieta-card">
+        <h3 style="color:#d4af37;">${p.cliente?.nombre}</h3>
+        <button onclick="verPlan(${p.id})" class="btn-ver">Ver</button>
+      </div>`;
+  });
+
+  actualizarPaginaUI();
+}
+
+function renderRutinas(lista){
+  const c = document.getElementById("contenedor-rutinas");
+  c.innerHTML = "";
+
+  lista.forEach(r => {
+    c.innerHTML += `
+      <div class="dieta-card">
+        <h3 style="color:#4dd0e1;">${r.cliente?.nombre}</h3>
+        <button onclick="verRutina(${r.id})" class="btn-ver">Ver rutina</button>
+      </div>`;
+  });
+
+  actualizarPaginaUI();
+}
+
+/* ================= VER ================= */
 async function verPlan(id){
-    const res = await fetch(`${API}/planes/${id}`);
-    const plan = await res.json();
-    document.getElementById("visor").innerHTML = plan.html;
+  const res = await fetch(`${API}/planes/${id}`);
+  const plan = await res.json();
+  document.getElementById("visor").innerHTML = plan.html;
 }
 
 async function verRutina(id){
-    const res = await fetch(`${API}/rutinas/${id}`);
-    const rutina = await res.json();
-    document.getElementById("visor").innerHTML = rutina.rutinaHtml;
+  const res = await fetch(`${API}/rutinas/${id}`);
+  const rutina = await res.json();
+  document.getElementById("visor").innerHTML =
+    rutina.rutinaHtml || "Sin rutina";
 }
 
-/* ===================== ELIMINAR ===================== */
-async function eliminarPlan(id){
-    if (!confirm("¿Eliminar plan?")) return;
-    await fetch(`${API}/planes/${id}`, { method: "DELETE" });
-    cargarDietas();
+/* ================= BUSCAR ================= */
+document.getElementById("busqueda").addEventListener("input", function(){
+  let q = this.value.toLowerCase();
+
+  if(tabActual === "dietas"){
+    let filtrado = listaDietas.filter(p =>
+      p.cliente?.nombre?.toLowerCase().includes(q)
+    );
+    renderDietas(filtrado);
+  }else{
+    let filtrado = listaRutinas.filter(r =>
+      r.cliente?.nombre?.toLowerCase().includes(q)
+    );
+    renderRutinas(filtrado);
+  }
+});
+
+/* ================= ORDEN ================= */
+function ordenar(){
+  let tipo = document.getElementById("orden").value;
+
+  if(tabActual === "dietas"){
+    listaDietas.sort((a,b)=>{
+      let n1 = a.cliente?.nombre || "";
+      let n2 = b.cliente?.nombre || "";
+      return tipo==="asc"?n1.localeCompare(n2):n2.localeCompare(n1);
+    });
+    renderDietas(listaDietas);
+  }else{
+    listaRutinas.sort((a,b)=>{
+      let n1 = a.cliente?.nombre || "";
+      let n2 = b.cliente?.nombre || "";
+      return tipo==="asc"?n1.localeCompare(n2):n2.localeCompare(n1);
+    });
+    renderRutinas(listaRutinas);
+  }
 }
 
-async function eliminarRutina(id){
-    if (!confirm("¿Eliminar rutina?")) return;
-    await fetch(`${API}/rutinas/${id}`, { method: "DELETE" });
-    cargarRutinas();
-}
+/* ================= PDF ================= */
+async function exportarPDF(){
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
 
-/* ===================== BUSCAR ===================== */
-async function buscar(){
-    let q = document.getElementById("busqueda").value;
+  let lista = tabActual === "dietas" ? listaDietas : listaRutinas;
 
-    if(q === ""){
-        tabActual === "dietas" ? cargarDietas() : cargarRutinas();
-        return;
+  let y = 10;
+  pdf.text("Clientes Charly Fitness", 10, y);
+
+  y += 10;
+
+  lista.forEach((item,i)=>{
+    let nombre = item.cliente?.nombre || "Sin nombre";
+    pdf.text(`${i+1}. ${nombre}`, 10, y);
+    y+=6;
+
+    if(y>280){
+      pdf.addPage();
+      y=10;
     }
+  });
 
-    if(tabActual === "dietas"){
-        const res = await fetch(`${API}/planes/buscar?q=${q}`);
-        const data = await res.json();
-
-        const contenedor = document.getElementById("contenedor-dietas");
-        contenedor.innerHTML = "";
-
-        data.forEach(plan => {
-            contenedor.innerHTML += `
-                <div class="dieta-card">
-                    <h3>${plan.cliente?.nombre}</h3>
-                    <button onclick="verPlan(${plan.id})" class="btn-ver">Ver</button>
-                </div>
-            `;
-        });
-
-    }else{
-        const res = await fetch(`${API}/rutinas?page=0&size=50`);
-        const data = await res.json();
-
-        const contenedor = document.getElementById("contenedor-rutinas");
-        contenedor.innerHTML = "";
-
-        data.content
-        .filter(r => r.cliente?.nombre?.toLowerCase().includes(q.toLowerCase()))
-        .forEach(rutina => {
-            contenedor.innerHTML += `
-                <div class="dieta-card">
-                    <h3>${rutina.cliente?.nombre}</h3>
-                    <button onclick="verRutina(${rutina.id})" class="btn-ver">Ver rutina</button>
-                </div>
-            `;
-        });
-    }
+  pdf.save("clientes.pdf");
 }
 
-/* ===================== PAGINACION ===================== */
+/* ================= PAGINACION ================= */
 function paginaSiguiente(){
-    if(tabActual === "dietas"){
-        if(paginaActual < totalPaginasDietas - 1){
-            paginaActual++;
-            cargarDietas();
-        }
-    }else{
-        if(paginaActual < totalPaginasRutinas - 1){
-            paginaActual++;
-            cargarRutinas();
-        }
+  if(tabActual === "dietas"){
+    if(paginaActual < totalPaginasDietas-1){
+      paginaActual++;
+      cargarDietas();
     }
+  }else{
+    if(paginaActual < totalPaginasRutinas-1){
+      paginaActual++;
+      cargarRutinas();
+    }
+  }
 }
 
 function paginaAnterior(){
-    if(paginaActual > 0){
-        paginaActual--;
-
-        tabActual === "dietas"
-            ? cargarDietas()
-            : cargarRutinas();
-    }
+  if(paginaActual>0){
+    paginaActual--;
+    tabActual==="dietas"?cargarDietas():cargarRutinas();
+  }
 }
 
 function actualizarPaginaUI(){
-    document.getElementById("pagina-info").innerText =
-        `Página ${paginaActual + 1}`;
+  document.getElementById("pagina-info").innerText =
+    `Página ${paginaActual+1}`;
 }
 
-/* ===================== INIT ===================== */
-async function init(){
-    await cargarDietas();
-}
-
-init();
-
-/* ENTER BUSCAR */
-document.getElementById("busqueda")
-.addEventListener("keypress", function(e){
-    if(e.key === "Enter") buscar();
-});
+/* INIT */
+cargarDietas();
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 </body>
 </html>
