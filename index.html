@@ -21,6 +21,10 @@
 </a>
 <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 <ul class="nav-links" id="navLinks">
+ <script>
+ document.querySelector(".nav-container").innerHTML += 
+  `<span style="color:#d4af37;">👤 ${localStorage.getItem("usuario")}</span>`;
+ </script>
 <button onclick="logout()" class="btn-delete">Salir</button>  
 <li><a href=" planes.html" class="btn-main">🥗 Planes</a></li>
 </ul>
