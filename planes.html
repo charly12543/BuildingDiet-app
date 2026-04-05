@@ -8,6 +8,7 @@
 
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-container">
     <a href="index.html" class="logo">
@@ -19,10 +20,17 @@
   </div>
 </nav> 
 
+<!-- HERO -->
 <section class="hero">
   <h1>📋 Panel de Planes</h1>
-  <p>Dietas y rutinas organizadas correctamente</p>
+  <p>Administra dietas y rutinas de forma profesional</p>
 </section>
+
+<!-- 🔥 TABS -->
+<div class="tabs">
+  <button onclick="mostrarDietas()" id="btnDietas" class="tab-activo">📋 Dietas</button>
+  <button onclick="mostrarRutinas()" id="btnRutinas">🏋️ Rutinas</button>
+</div>
 
 <!-- 🔍 BUSQUEDA -->
 <div class="busqueda-box">
@@ -32,24 +40,28 @@
 
 <section>
 
-  <!-- 🔥 DIETAS -->
+<!-- 📋 DIETAS -->
+<div id="seccion-dietas">
   <h2>📋 Dietas</h2>
   <div id="contenedor-planes"></div>
+</div>
 
-  <!-- 🔥 RUTINAS -->
-  <h2 style="margin-top:40px;">🏋️ Rutinas</h2>
+<!-- 🏋️ RUTINAS -->
+<div id="seccion-rutinas" style="display:none;">
+  <h2>🏋️ Rutinas</h2>
   <div id="contenedor-rutinas"></div>
+</div>
 
-  <!-- 👁 VISOR -->
-  <h2 style="margin-top:40px;">👁️ Visor</h2>
-  <div id="visor" class="visor-box">
-    Selecciona un plan o rutina
-  </div>
+<!-- 👁 VISOR -->
+<h2 style="margin-top:40px;">👁️ Visor</h2>
+<div id="visor" class="visor-box">
+  Selecciona un plan o rutina
+</div>
 
-  <!-- 🔥 EXPORTAR -->
-  <button onclick="exportarPDF()" class="btn-ver" style="margin-top:20px;">
-    📄 Exportar lo que estás viendo
-  </button>
+<!-- 📄 EXPORTAR -->
+<button onclick="exportarPDF()" class="btn-ver" style="margin-top:20px;">
+  📄 Exportar PDF
+</button>
 
 </section>
 
@@ -60,6 +72,7 @@
   <button onclick="paginaSiguiente()">➡</button>
 </div>
 
+<!-- LIBRERIAS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -68,8 +81,34 @@ const API = "http://localhost:8080/api";
 
 let paginaActual = 0;
 let totalPaginas = 0;
+let vistaActual = "dietas";
 
-/* ===================== CARGAR PLANES ===================== */
+/* ===================== TABS ===================== */
+function mostrarDietas(){
+    vistaActual = "dietas";
+
+    document.getElementById("seccion-dietas").style.display="block";
+    document.getElementById("seccion-rutinas").style.display="none";
+
+    document.getElementById("btnDietas").classList.add("tab-activo");
+    document.getElementById("btnRutinas").classList.remove("tab-activo");
+
+    cargarPlanes(paginaActual);
+}
+
+function mostrarRutinas(){
+    vistaActual = "rutinas";
+
+    document.getElementById("seccion-dietas").style.display="none";
+    document.getElementById("seccion-rutinas").style.display="block";
+
+    document.getElementById("btnRutinas").classList.add("tab-activo");
+    document.getElementById("btnDietas").classList.remove("tab-activo");
+
+    cargarRutinas(paginaActual);
+}
+
+/* ===================== PLANES ===================== */
 async function cargarPlanes(page = 0){
     const res = await fetch(`${API}/planes?page=${page}&size=5`);
     const data = await res.json();
@@ -82,12 +121,12 @@ async function cargarPlanes(page = 0){
     data.content.forEach(plan => {
         contenedor.innerHTML += `
         <div class="dieta-card">
-            <h3 style="color:#d4af37;">${plan.cliente?.nombre}</h3>
+            <h3 style="color:#d4af37;">${plan.cliente?.nombre || "Sin nombre"}</h3>
             <p>📅 ${plan.fecha}</p>
 
             <div class="acciones">
                 <button onclick="verPlan(${plan.id})" class="btn-ver">👁 Ver</button>
-                <button onclick="eliminarPlan(${plan.id})" class="btn-delete">🗑</button>
+                <button onclick="eliminarPlan(${plan.id})" class="btn-delete">🗑 Eliminar</button>
             </div>
         </div>`;
     });
@@ -95,10 +134,12 @@ async function cargarPlanes(page = 0){
     actualizarPaginaUI();
 }
 
-/* ===================== CARGAR RUTINAS ===================== */
+/* ===================== RUTINAS ===================== */
 async function cargarRutinas(page = 0){
     const res = await fetch(`${API}/rutinas?page=${page}&size=5`);
     const data = await res.json();
+
+    totalPaginas = data.totalPages;
 
     const contenedor = document.getElementById("contenedor-rutinas");
     contenedor.innerHTML = "";
@@ -106,15 +147,17 @@ async function cargarRutinas(page = 0){
     data.content.forEach(rutina => {
         contenedor.innerHTML += `
         <div class="dieta-card">
-            <h3 style="color:#4dd0e1;">${rutina.cliente?.nombre}</h3>
-            <p>🏋️ ${rutina.cliente?.diasGym} días</p>
+            <h3 style="color:#4dd0e1;">${rutina.cliente?.nombre || "Sin nombre"}</h3>
+            <p>🏋️ ${rutina.cliente?.diasGym || '-'} días</p>
 
             <div class="acciones">
                 <button onclick="verRutina(${rutina.id})" class="btn-ver">👁 Ver</button>
-                <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">🗑</button>
+                <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">🗑 Eliminar</button>
             </div>
         </div>`;
     });
+
+    actualizarPaginaUI();
 }
 
 /* ===================== VER ===================== */
@@ -132,13 +175,13 @@ async function verRutina(id){
 
 /* ===================== ELIMINAR ===================== */
 async function eliminarPlan(id){
-    if(!confirm("Eliminar plan?")) return;
+    if(!confirm("¿Eliminar plan?")) return;
     await fetch(`${API}/planes/${id}`, {method:"DELETE"});
     cargarPlanes(paginaActual);
 }
 
 async function eliminarRutina(id){
-    if(!confirm("Eliminar rutina?")) return;
+    if(!confirm("¿Eliminar rutina?")) return;
     await fetch(`${API}/rutinas/${id}`, {method:"DELETE"});
     cargarRutinas(paginaActual);
 }
@@ -148,41 +191,42 @@ async function buscar(){
     let q = document.getElementById("busqueda").value;
 
     if(q === ""){
-        cargarPlanes();
-        cargarRutinas();
+        if(vistaActual === "dietas") cargarPlanes();
+        else cargarRutinas();
         return;
     }
 
-    // SOLO filtra dietas (para no romper)
-    const res = await fetch(`${API}/planes/buscar?q=${q}`);
-    const data = await res.json();
+    if(vistaActual === "dietas"){
+        const res = await fetch(`${API}/planes/buscar?q=${q}`);
+        const data = await res.json();
 
-    const contenedor = document.getElementById("contenedor-planes");
-    contenedor.innerHTML = "";
+        const contenedor = document.getElementById("contenedor-planes");
+        contenedor.innerHTML = "";
 
-    data.forEach(plan => {
-        contenedor.innerHTML += `
-        <div class="dieta-card">
-            <h3>${plan.cliente?.nombre}</h3>
-            <button onclick="verPlan(${plan.id})" class="btn-ver">Ver</button>
-        </div>`;
-    });
-
-    document.getElementById("contenedor-rutinas").innerHTML = "";
+        data.forEach(plan => {
+            contenedor.innerHTML += `
+            <div class="dieta-card">
+                <h3>${plan.cliente?.nombre}</h3>
+                <button onclick="verPlan(${plan.id})" class="btn-ver">Ver</button>
+            </div>`;
+        });
+    } else {
+        alert("Búsqueda de rutinas por ID en desarrollo 🔥");
+    }
 }
 
 /* ===================== PAGINACION ===================== */
 function paginaSiguiente(){
     paginaActual++;
-    cargarPlanes(paginaActual);
-    cargarRutinas(paginaActual);
+    if(vistaActual === "dietas") cargarPlanes(paginaActual);
+    else cargarRutinas(paginaActual);
 }
 
 function paginaAnterior(){
     if(paginaActual > 0){
         paginaActual--;
-        cargarPlanes(paginaActual);
-        cargarRutinas(paginaActual);
+        if(vistaActual === "dietas") cargarPlanes(paginaActual);
+        else cargarRutinas(paginaActual);
     }
 }
 
@@ -191,7 +235,7 @@ function actualizarPaginaUI(){
         `Página ${paginaActual + 1}`;
 }
 
-/* ===================== PDF FIX ===================== */
+/* ===================== PDF ===================== */
 async function exportarPDF(){
     const { jsPDF } = window.jspdf;
     const elemento = document.getElementById("visor");
@@ -214,8 +258,7 @@ async function exportarPDF(){
 
 /* ===================== INIT ===================== */
 async function init(){
-    await cargarPlanes();
-    await cargarRutinas();
+    mostrarDietas();
 }
 
 init();
