@@ -21,8 +21,6 @@
 </a>
 <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 <ul class="nav-links" id="navLinks">
- document.querySelector(".nav-container").innerHTML += 
-  `<span style="color:#d4af37;">👤 ${localStorage.getItem("usuario")}</span>`;
 <button onclick="logout()" class="btn-delete">Salir</button>  
 <li><a href=" planes.html" class="btn-main">🥗 Planes</a></li>
 </ul>
@@ -758,6 +756,23 @@ function logout(){
   localStorage.removeItem("token");
   window.location.href = "login.html";
 }  
+</script>
+
+ <script>
+/* 🔒 VALIDAR LOGIN */
+if(!localStorage.getItem("token")){
+  window.location.replace("login.html");
+}  
+
+/* 👤 MOSTRAR USUARIO */
+document.addEventListener("DOMContentLoaded", () => {
+  let usuario = localStorage.getItem("usuario");
+
+  if(usuario){
+    document.getElementById("usuarioNav").innerHTML =
+      `👤 <span style="color:#d4af37;">${usuario}</span>`;
+  }
+});
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
