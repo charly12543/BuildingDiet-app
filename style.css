@@ -7,6 +7,42 @@ html, body{ overflow-x:hidden; }
   overflow-y: auto;
 }
 
+/* ===== TABS ===== */
+.tabs{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:20px;
+}
+
+.tab-btn{
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  background:#1c1c1c;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.tab-btn.active{
+  background:linear-gradient(135deg,#d4af37,#f5d76e);
+  color:black;
+  font-weight:bold;
+}
+
+.tab-btn:hover{
+  transform:scale(1.05);
+}
+
+/* contenedores */
+#contenedor-dietas,
+#contenedor-rutinas{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
 /* BUSQUEDA */
 .busqueda-box{
   display:flex;
