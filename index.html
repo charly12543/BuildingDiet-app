@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dietas-app</title>
 <link rel="stylesheet" href="style.css">
+<script>
+ if(!localStorage.getItem("token")){
+  window.location.href = "login.html";
+}
+</script>  
 </head>
 <body>
 
@@ -16,6 +21,7 @@
 </a>
 <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 <ul class="nav-links" id="navLinks">
+<button onclick="logout()" class="btn-delete">Salir</button>  
 <li><a href=" planes.html" class="btn-main">🥗 Planes</a></li>
 </ul>
 </div>
@@ -744,6 +750,12 @@ async function guardarRutinaBackend(){
     console.error("❌ Error rutina:", err);  
   }  
 }
+
+/* log - Out */  
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+}  
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
