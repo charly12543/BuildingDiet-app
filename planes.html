@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <title>Planes - Charly Fitness</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+  if(!localStorage.getItem("token")){
+  window.location.href = "login.html";
+}
+</script>
 </head>
 
 <body>
@@ -16,6 +21,7 @@
     </a>
     <ul class="nav-links">
        <li><a href="index.html" class="btn-main">🥗 Inicio</a></li>     
+       <button onclick="logout()" class="btn-delete">Salir</button>
     </ul>
   </div>
 </nav> 
@@ -268,6 +274,12 @@ document.getElementById("busqueda")
 .addEventListener("keypress", e=>{
     if(e.key==="Enter") buscar();
 });
+
+/* Log-Out */
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+}  
 </script>
 
 </body>
