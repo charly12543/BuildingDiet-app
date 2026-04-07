@@ -184,9 +184,10 @@ async function verRutina(id){
     const res = await fetch(`${API}/rutinas/${id}`);
     const data = await res.json();
 
-    document.getElementById("visor").innerHTML = data.rutinaHtml;
+    localStorage.setItem("rutinaEditarId", data.id);
+    localStorage.setItem("clienteEditar", JSON.stringify(data.cliente));
 
-    rutinaActualId = data.id;
+    window.location.href = "index.html";
 }
 
 /* ===================== ELIMINAR ===================== */
