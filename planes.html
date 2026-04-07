@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Planes - Charly Fitness</title>
   <link rel="stylesheet" href="style.css">
+
   <script>
   if(!localStorage.getItem("token")){
     window.location.href = "login.html";
@@ -13,6 +14,7 @@
 
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-container">
     <a href="index.html" class="logo">
@@ -25,32 +27,38 @@
   </div>
 </nav> 
 
+<!-- HERO -->
 <section class="hero">
   <h1>📋 Panel de Planes</h1>
 </section>
 
+<!-- TABS -->
 <div class="tabs">
   <button onclick="mostrarDietas()" id="btnDietas" class="tab-activo">📋 Dietas</button>
   <button onclick="mostrarRutinas()" id="btnRutinas">🏋️ Rutinas</button>
 </div>
 
+<!-- BUSQUEDA -->
 <div class="busqueda-box">
-  <input type="text" id="busqueda" placeholder="Buscar">
+  <input type="text" id="busqueda" placeholder="Buscar por ID o nombre">
   <button onclick="buscar()">🔍</button>
 </div>
 
 <section>
 
+<!-- DIETAS -->
 <div id="seccion-dietas">
   <h2>📋 Dietas</h2>
   <div id="contenedor-planes"></div>
 </div>
 
+<!-- RUTINAS -->
 <div id="seccion-rutinas" style="display:none;">
   <h2>🏋️ Rutinas</h2>
   <div id="contenedor-rutinas"></div>
 </div>
 
+<!-- VISOR -->
 <h2>👁️ Visor</h2>
 <div id="visor" class="visor-box"></div>
 
@@ -60,12 +68,14 @@
 
 </section>
 
+<!-- PAGINACION -->
 <div class="paginacion">
   <button onclick="paginaAnterior()">⬅</button>
   <span id="pagina-info">Página 1</span>
   <button onclick="paginaSiguiente()">➡</button>
 </div>
 
+<!-- LIBRERIAS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -85,6 +95,9 @@ function mostrarDietas(){
     document.getElementById("seccion-dietas").style.display="block";
     document.getElementById("seccion-rutinas").style.display="none";
 
+    document.getElementById("btnDietas").classList.add("tab-activo");
+    document.getElementById("btnRutinas").classList.remove("tab-activo");
+
     cargarPlanes();
 }
 
@@ -94,6 +107,9 @@ function mostrarRutinas(){
 
     document.getElementById("seccion-dietas").style.display="none";
     document.getElementById("seccion-rutinas").style.display="block";
+
+    document.getElementById("btnRutinas").classList.add("tab-activo");
+    document.getElementById("btnDietas").classList.remove("tab-activo");
 
     cargarRutinas();
 }
@@ -111,12 +127,14 @@ async function cargarPlanes(page = 0){
     data.content.forEach(plan => {
         contenedor.innerHTML += `
         <div class="dieta-card">
-            <h3>${plan.cliente?.nombre}</h3>
-            <p>${plan.fecha}</p>
+            <h3 style="color:#d4af37;">${plan.cliente?.nombre || "Sin nombre"}</h3>
+            <p>📅 ${plan.fecha}</p>
 
-            <button onclick="verPlan(${plan.id})">👁 Ver</button>
-            <button onclick="editarPlan(${plan.id})">✏️ Editar</button>
-            <button onclick="eliminarPlan(${plan.id})">🗑</button>
+            <div class="acciones">
+                <button onclick="verPlan(${plan.id})" class="btn-ver">👁 Ver</button>
+                <button onclick="editarPlan(${plan.id})" class="btn-main">✏️ Editar</button>
+                <button onclick="eliminarPlan(${plan.id})" class="btn-delete">🗑</button>
+            </div>
         </div>`;
     });
 
@@ -136,11 +154,14 @@ async function cargarRutinas(page = 0){
     data.content.forEach(r => {
         contenedor.innerHTML += `
         <div class="dieta-card">
-            <h3>${r.cliente?.nombre}</h3>
+            <h3 style="color:#4dd0e1;">${r.cliente?.nombre || "Sin nombre"}</h3>
+            <p>🏋️ ${r.cliente?.diasGym || '-'} días</p>
 
-            <button onclick="verRutina(${r.id})">👁 Ver</button>
-            <button onclick="editarRutina(${r.id})">✏️ Editar</button>
-            <button onclick="eliminarRutina(${r.id})">🗑</button>
+            <div class="acciones">
+                <button onclick="verRutina(${r.id})" class="btn-ver">👁 Ver</button>
+                <button onclick="editarRutina(${r.id})" class="btn-main">✏️ Editar</button>
+                <button onclick="eliminarRutina(${r.id})" class="btn-delete">🗑</button>
+            </div>
         </div>`;
     });
 
@@ -187,18 +208,25 @@ async function editarRutina(id){
 
 /* ===================== DELETE ===================== */
 async function eliminarPlan(id){
+    if(!confirm("¿Eliminar plan?")) return;
     await fetch(`${API}/planes/${id}`, {method:"DELETE"});
-    cargarPlanes();
+    cargarPlanes(paginaActual);
 }
 
 async function eliminarRutina(id){
+    if(!confirm("¿Eliminar rutina?")) return;
     await fetch(`${API}/rutinas/${id}`, {method:"DELETE"});
-    cargarRutinas();
+    cargarRutinas(paginaActual);
 }
 
 /* ===================== BUSCAR ===================== */
 async function buscar(){
     let q = document.getElementById("busqueda").value;
+
+    if(q === ""){
+        vistaActual === "dietas" ? cargarPlanes() : cargarRutinas();
+        return;
+    }
 
     if(vistaActual === "dietas"){
         const res = await fetch(`${API}/planes/buscar?q=${q}`);
@@ -211,7 +239,7 @@ async function buscar(){
             contenedor.innerHTML += `
             <div class="dieta-card">
                 <h3>${p.cliente?.nombre}</h3>
-                <button onclick="verPlan(${p.id})">Ver</button>
+                <button onclick="verPlan(${p.id})" class="btn-ver">Ver</button>
             </div>`;
         });
     }
@@ -242,7 +270,12 @@ async function exportarPDF(){
     const { jsPDF } = window.jspdf;
     const elemento = document.getElementById("visor");
 
-    const canvas = await html2canvas(elemento);
+    if(!elemento.innerText.trim()){
+        alert("Nada que exportar bro 🔥");
+        return;
+    }
+
+    const canvas = await html2canvas(elemento, {scale:2});
     const img = canvas.toDataURL("image/png");
 
     const pdf = new jsPDF();
@@ -250,7 +283,7 @@ async function exportarPDF(){
     pdf.save("plan.pdf");
 }
 
-/* ===================== INIT ===================== */
+/* INIT */
 mostrarDietas();
 
 /* LOGOUT */
