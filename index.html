@@ -345,17 +345,20 @@ function generarDietaPRO(datos){
   
 /* ===================== USAR PRO ===================== */
 function usarPro(){
-  let datos = {
-    nombre: document.getElementById("nombreCliente").value,
-    peso: parseFloat(document.getElementById("peso").value),
-    altura: parseFloat(document.getElementById("altura").value),
-    edad: parseFloat(document.getElementById("edad").value),
-    sexo: document.getElementById("sexo").value,
-    objetivo: document.getElementById("objetivo").value,
-    nivel: document.getElementById("nivel").value,
-    tomaWhey: document.getElementById("tomaWhey").value==="true",
-    diasGym: parseInt(document.getElementById("diasGym").value) || 0
-  };
+let clienteStorage = JSON.parse(localStorage.getItem("clienteEditar") || "{}");
+
+let datos = {
+  id: clienteStorage.id || null, // 🔥 CLAVE PRO
+  nombre: document.getElementById("nombreCliente").value,
+  peso: parseFloat(document.getElementById("peso").value),
+  altura: parseFloat(document.getElementById("altura").value),
+  edad: parseFloat(document.getElementById("edad").value),
+  sexo: document.getElementById("sexo").value,
+  objetivo: document.getElementById("objetivo").value,
+  nivel: document.getElementById("nivel").value,
+  tomaWhey: document.getElementById("tomaWhey").value==="true",
+  diasGym: parseInt(document.getElementById("diasGym").value) || 0
+};
 
   if(!datos.peso || !datos.altura || !datos.edad){
     alert("Completa todos los datos bro 🔥");
