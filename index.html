@@ -660,8 +660,8 @@ async function guardarPlanBackend(datos, dieta){
     let html = document.getElementById("resultadoPRO").innerHTML;
 
     if(!html || html.trim() === ""){
-    alert("Primero genera la dieta bro 🔥");
-    return;
+      alert("Primero genera la dieta bro 🔥");
+      return;
     }
 
     let payload = {
@@ -670,8 +670,19 @@ async function guardarPlanBackend(datos, dieta){
       html: html
     };
 
-      let res = await fetch("http://localhost:8080/api/guardar-plan", {  
-      method: "POST",
+    let planId = localStorage.getItem("planEditarId");
+
+    let url = "http://localhost:8080/api/guardar-plan";
+    let method = "POST";
+
+    // 🔥 SI EXISTE → UPDATE
+    if(planId){
+      url = `http://localhost:8080/api/planes/${planId}`;
+      method = "PUT";
+    }
+
+    let res = await fetch(url, {
+      method: method,
       headers: {
         "Content-Type": "application/json"
       },
@@ -685,13 +696,18 @@ async function guardarPlanBackend(datos, dieta){
 
     let data = await res.json();
 
-    console.log("✅ Plan guardado:", data);
+    console.log("✅ Plan guardado/actualizado:", data);
+
+    // 🔥 LIMPIAR MODO EDICIÓN
+    localStorage.removeItem("planEditarId");
+    localStorage.removeItem("clienteEditar");
+
+    alert(planId ? "✅ Plan actualizado" : "✅ Plan guardado");
 
   } catch(error){
     console.error("❌ Error conexión:", error);
   }
 }
-
 /* ===================== guardarRutinaBackend ===================== */  
 async function guardarRutinaBackend(){  
   try {  
@@ -773,6 +789,30 @@ document.addEventListener("DOMContentLoaded", () => {
       `👤 <span style="color:#d4af37;">${usuario}</span>`;
   }
 });
+
+/* 👤 CARGAER DATOS AUTOMATICOS */
+document.addEventListener("DOMContentLoaded", () => {
+
+  let cliente = localStorage.getItem("clienteEditar");
+
+  if(cliente){
+
+    let data = JSON.parse(cliente);
+
+    document.getElementById("nombreCliente").value = data.nombre || "";
+    document.getElementById("peso").value = data.peso || "";
+    document.getElementById("altura").value = data.altura || "";
+    document.getElementById("edad").value = data.edad || "";
+    document.getElementById("sexo").value = data.sexo || "hombre";
+    document.getElementById("objetivo").value = data.objetivo || "definicion";
+    document.getElementById("nivel").value = data.nivel || "novato";
+    document.getElementById("diasGym").value = data.diasGym || 3;
+    document.getElementById("tomaWhey").value = data.tomaWhey ? "true" : "false";
+
+    console.log("🔥 Cliente cargado para edición");
+  }
+
+});  
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
