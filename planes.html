@@ -171,21 +171,12 @@ async function verPlan(id){
     const res = await fetch(`${API}/planes/${id}`);
     const data = await res.json();
 
-    document.getElementById("visor").innerHTML = data.html;
+    // 🔥 guardar TODO en localStorage
+    localStorage.setItem("planEditarId", data.id);
+    localStorage.setItem("clienteEditar", JSON.stringify(data.cliente));
 
-    // 🔥 guardar ID
-    planActualId = data.id;
-
-    // 🔥 cargar datos en calculadora
-    document.getElementById("nombreCliente").value = data.cliente?.nombre || "";
-    document.getElementById("peso").value = data.cliente?.peso || "";
-    document.getElementById("altura").value = data.cliente?.altura || "";
-    document.getElementById("edad").value = data.cliente?.edad || "";
-    document.getElementById("sexo").value = data.cliente?.sexo || "hombre";
-    document.getElementById("objetivo").value = data.cliente?.objetivo || "definicion";
-    document.getElementById("nivel").value = data.cliente?.nivel || "novato";
-    document.getElementById("diasGym").value = data.cliente?.diasGym || 3;
-    document.getElementById("tomaWhey").value = data.cliente?.tomaWhey ? "true" : "false";
+    // 🔥 REDIRIGIR a index (calculadora)
+    window.location.href = "index.html";
 }
 
   /* ===================== VER RUTINA ===================== */
