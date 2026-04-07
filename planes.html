@@ -131,7 +131,8 @@ async function cargarPlanes(page = 0){
             <p>📅 ${plan.fecha}</p>
 
             <div class="acciones">
-                <button onclick="verPlan(${plan.id})" class="btn-ver">👁 Ver</button>
+                <button onclick="verSolo(${plan.id})" class="btn-ver">👁 Ver</button>
+                <button onclick="editarPlan(${plan.id})" class="btn-main">✏️ Editar</button>
                 <button onclick="eliminarPlan(${plan.id})" class="btn-delete">🗑 Eliminar</button>
             </div>
         </div>`;
@@ -148,23 +149,34 @@ async function cargarRutinas(page = 0){
     totalPaginas = data.totalPages;
 
     const contenedor = document.getElementById("contenedor-rutinas");
-    contenedor.innerHTML = "";
+    let html = "";
 
-    data.content.forEach(rutina => {
-        contenedor.innerHTML += `
-        <div class="dieta-card">
-            <h3 style="color:#4dd0e1;">${rutina.cliente?.nombre || "Sin nombre"}</h3>
-            <p>🏋️ ${rutina.cliente?.diasGym || '-'} días</p>
+data.content.forEach(rutina => {
+    html += `
+    <div class="dieta-card">
+        <h3 style="color:#4dd0e1;">${rutina.cliente?.nombre || "Sin nombre"}</h3>
+        <p>🏋️ ${rutina.cliente?.diasGym || '-'} días</p>
 
-            <div class="acciones">
-                <button onclick="verRutina(${rutina.id})" class="btn-ver">👁 Ver</button>
-                <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">🗑 Eliminar</button>
-            </div>
-        </div>`;
-    });
+        <div class="acciones">
+            <button onclick="verRutina(${rutina.id})" class="btn-ver">👁 Ver</button>
+            <button onclick="editarRutina(${rutina.id})" class="btn-main">✏️ Editar</button>
+            <button onclick="eliminarRutina(${rutina.id})" class="btn-delete">🗑</button>
+        </div>
+    </div>`;
+});
 
-    actualizarPaginaUI();
-}
+contenedor.innerHTML = html;
+
+async function editarRutina(id){
+    const res = await fetch(`${API}/rutinas/${id}`);
+    const data = await res.json();
+
+    localStorage.setItem("rutinaEditarId", data.id);
+    localStorage.setItem("clienteEditar", JSON.stringify(data.cliente));
+    localStorage.setItem("modoEdicion", "true");
+
+    window.location.href = "index.html";
+}  
 
 /* ===================== VER PLAN ===================== */
 async function verPlan(id){
@@ -184,10 +196,12 @@ async function verRutina(id){
     const res = await fetch(`${API}/rutinas/${id}`);
     const data = await res.json();
 
-    localStorage.setItem("rutinaEditarId", data.id);
-    localStorage.setItem("clienteEditar", JSON.stringify(data.cliente));
+    if(!data.rutinaHtml){
+        alert("❌ No hay rutina guardada");
+        return;
+    }
 
-    window.location.href = "index.html";
+    document.getElementById("visor").innerHTML = data.rutinaHtml;
 }
 
 /* ===================== ELIMINAR ===================== */
@@ -308,6 +322,26 @@ document.addEventListener("DOMContentLoaded", () => {
       `👤 <span style="color:#d4af37;">${usuario}</span>`;
   }
 });
+
+/* 🔒 VER SOLO ID */    
+async function verSolo(id){
+    const res = await fetch(`${API}/planes/${id}`);
+    const data = await res.json();
+
+    document.getElementById("visor").innerHTML = data.html;
+}
+    
+/* 🔒 EDITAR PLAN*/    
+async function editarPlan(id){
+    const res = await fetch(`${API}/planes/${id}`);
+    const data = await res.json();
+
+    localStorage.setItem("planEditarId", data.id);
+    localStorage.setItem("clienteEditar", JSON.stringify(data.cliente));
+    localStorage.setItem("modoEdicion", "true");
+
+    window.location.href = "index.html";
+}    
 </script>
 
 </body>
