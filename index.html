@@ -31,7 +31,8 @@
 <section class="hero">
   <h1>🔥 Calculadora PRO (Privada)</h1>
   <p>Genera dieta + rutina personalizada</p>
-  <h3>⚠️ Solo uso interno</h3>
+  <h3><button onclick="limpiarCliente()" style="margin-top:10px; background:#999;">
+  ❌ Nuevo cliente</button></h3>
 </section>
 
 <!-- CALCULADORA -->   
@@ -797,6 +798,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
 
   let cliente = localStorage.getItem("clienteEditar");
+  let modoEdicion = localStorage.getItem("modoEdicion");
 
   if(cliente){
 
@@ -812,10 +814,33 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("diasGym").value = data.diasGym || 3;
     document.getElementById("tomaWhey").value = data.tomaWhey ? "true" : "false";
 
-    console.log("🔥 Cliente cargado para edición");
+    // 🔥 INDICADOR VISUAL
+    if(modoEdicion){
+      document.querySelector(".hero h1").innerText = "✏️ Editando cliente";
+    }
+
   }
 
-});  
+});
+
+
+// 🔥 LIMPIAR CLIENTE  
+function limpiarCliente(){
+
+  localStorage.removeItem("planEditarId");
+  localStorage.removeItem("clienteEditar");
+  localStorage.removeItem("modoEdicion");
+  localStorage.removeItem("rutinaEditarId");
+
+  document.querySelectorAll("input").forEach(i => i.value = "");
+  document.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+
+  document.getElementById("resultadoPRO").innerHTML = "";
+
+  document.querySelector(".hero h1").innerText = "🔥 Calculadora PRO (Privada)";
+
+  alert("🆕 Modo nuevo cliente activado");
+}  
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
