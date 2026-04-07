@@ -726,14 +726,14 @@ async function guardarRutinaBackend(){
       tomaWhey: document.getElementById("tomaWhey").value === "true"
     };
 
-    if(!html || html.trim() === ""){
-      alert("Primero genera la rutina bro 🔥");
-      return;
-    }
+    let rutinaId = localStorage.getItem("rutinaEditarId");
 
-    if(!cliente.nombre){
-      alert("Pon nombre del cliente bro 🔥");
-      return;
+    let url = "http://localhost:8080/api/guardar-rutina";
+    let method = "POST";
+
+    if(rutinaId){
+      url = `http://localhost:8080/api/rutinas/${rutinaId}`;
+      method = "PUT";
     }
 
     let payload = {
@@ -741,26 +741,26 @@ async function guardarRutinaBackend(){
       rutinaHtml: html
     };
 
-    console.log("📦 Enviando rutina:", payload);
-
-    let res = await fetch("http://localhost:8080/api/guardar-rutina", {  
-      method: "POST",  
-      headers: {  
-        "Content-Type": "application/json"  
-      },  
+    let res = await fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(payload)
     });
 
     if(!res.ok){
-      let error = await res.text();
-      console.error("❌ Error backend rutina:", error);
+      console.error("❌ Error rutina");
       return;
     }
 
-    let data = await res.json();  
+    let data = await res.json();
 
-    console.log("🏋️ Rutina guardada:", data);  
-    alert("✅ Rutina guardada");
+    console.log("🏋️ Rutina guardada/actualizada:", data);
+
+    localStorage.removeItem("rutinaEditarId");
+
+    alert(rutinaId ? "✅ Rutina actualizada" : "✅ Rutina guardada");
 
   } catch(err){  
     console.error("❌ Error rutina:", err);  
