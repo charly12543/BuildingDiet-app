@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Planes - Charly Fitness</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Planes - Charly Fitness</title>
+<link rel="stylesheet" href="style.css">
 
-  <script>
-  if(!localStorage.getItem("token")){
-    window.location.href = "login.html";
-  }
-  </script>
+<script>
+if(!localStorage.getItem("token")){
+  window.location.href = "login.html";
+}
+</script>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-container">
     <a href="index.html" class="logo">
@@ -27,55 +26,47 @@
   </div>
 </nav> 
 
-<!-- HERO -->
 <section class="hero">
   <h1>📋 Panel de Planes</h1>
 </section>
 
-<!-- TABS -->
 <div class="tabs">
   <button onclick="mostrarDietas()" id="btnDietas" class="tab-activo">📋 Dietas</button>
   <button onclick="mostrarRutinas()" id="btnRutinas">🏋️ Rutinas</button>
 </div>
 
-<!-- BUSQUEDA -->
 <div class="busqueda-box">
-  <input type="text" id="busqueda" placeholder="Buscar por ID o nombre">
+  <input type="text" id="busqueda" placeholder="Buscar por nombre o ID">
   <button onclick="buscar()">🔍</button>
 </div>
 
 <section>
 
-<!-- DIETAS -->
 <div id="seccion-dietas">
   <h2>📋 Dietas</h2>
   <div id="contenedor-planes"></div>
 </div>
 
-<!-- RUTINAS -->
 <div id="seccion-rutinas" style="display:none;">
   <h2>🏋️ Rutinas</h2>
   <div id="contenedor-rutinas"></div>
 </div>
 
-<!-- VISOR -->
 <h2>👁️ Visor</h2>
-<div id="visor" class="visor-box"></div>
+<div id="visor" class="visor-box">Selecciona un plan</div>
 
 <button onclick="exportarPDF()" class="btn-ver">
-  📄 Exportar PDF
+📄 Exportar PDF
 </button>
 
 </section>
 
-<!-- PAGINACION -->
 <div class="paginacion">
   <button onclick="paginaAnterior()">⬅</button>
   <span id="pagina-info">Página 1</span>
   <button onclick="paginaSiguiente()">➡</button>
 </div>
 
-<!-- LIBRERIAS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -88,205 +79,213 @@ let totalPaginas = 0;
 let vistaActual = "dietas";
 
 /* ===================== TABS ===================== */
+function activarTab(tab){
+  document.getElementById("btnDietas").classList.remove("tab-activo");
+  document.getElementById("btnRutinas").classList.remove("tab-activo");
+
+  document.getElementById(tab).classList.add("tab-activo");
+}
+
 function mostrarDietas(){
-    vistaActual = "dietas";
-    paginaActual = 0;
+  vistaActual = "dietas";
+  paginaActual = 0;
 
-    document.getElementById("seccion-dietas").style.display="block";
-    document.getElementById("seccion-rutinas").style.display="none";
+  activarTab("btnDietas");
 
-    document.getElementById("btnDietas").classList.add("tab-activo");
-    document.getElementById("btnRutinas").classList.remove("tab-activo");
+  document.getElementById("seccion-dietas").style.display="block";
+  document.getElementById("seccion-rutinas").style.display="none";
 
-    cargarPlanes();
+  cargarPlanes();
 }
 
 function mostrarRutinas(){
-    vistaActual = "rutinas";
-    paginaActual = 0;
+  vistaActual = "rutinas";
+  paginaActual = 0;
 
-    document.getElementById("seccion-dietas").style.display="none";
-    document.getElementById("seccion-rutinas").style.display="block";
+  activarTab("btnRutinas");
 
-    document.getElementById("btnRutinas").classList.add("tab-activo");
-    document.getElementById("btnDietas").classList.remove("tab-activo");
+  document.getElementById("seccion-dietas").style.display="none";
+  document.getElementById("seccion-rutinas").style.display="block";
 
-    cargarRutinas();
+  cargarRutinas();
 }
 
 /* ===================== PLANES ===================== */
 async function cargarPlanes(page = 0){
-    const res = await fetch(`${API}/planes?page=${page}&size=5`);
-    const data = await res.json();
+  const res = await fetch(`${API}/planes?page=${page}&size=5`);
+  const data = await res.json();
 
-    totalPaginas = data.totalPages;
+  totalPaginas = data.totalPages;
 
-    const contenedor = document.getElementById("contenedor-planes");
-    contenedor.innerHTML = "";
+  const contenedor = document.getElementById("contenedor-planes");
+  contenedor.innerHTML = "";
 
-    data.content.forEach(plan => {
-        contenedor.innerHTML += `
-        <div class="dieta-card">
-            <h3 style="color:#d4af37;">${plan.cliente?.nombre || "Sin nombre"}</h3>
-            <p>📅 ${plan.fecha}</p>
+  data.content.forEach(plan => {
+    contenedor.innerHTML += `
+    <div class="dieta-card">
+      <h3 style="color:#d4af37;">${plan.cliente?.nombre || "Sin nombre"}</h3>
+      <p>📅 ${plan.fecha}</p>
 
-            <div class="acciones">
-                <button onclick="verPlan(${plan.id})" class="btn-ver">👁 Ver</button>
-                <button onclick="editarPlan(${plan.id})" class="btn-main">✏️ Editar</button>
-                <button onclick="eliminarPlan(${plan.id})" class="btn-delete">🗑</button>
-            </div>
-        </div>`;
-    });
+      <div class="acciones">
+        <button onclick="verPlan(${plan.id})" class="btn-ver">👁 Ver</button>
+        <button onclick="editarPlan(${plan.id})" class="btn-main">✏️ Editar</button>
+        <button onclick="eliminarPlan(${plan.id})" class="btn-delete">🗑</button>
+      </div>
+    </div>`;
+  });
 
-    actualizarPaginaUI();
+  actualizarPaginaUI();
 }
 
 /* ===================== RUTINAS ===================== */
 async function cargarRutinas(page = 0){
-    const res = await fetch(`${API}/rutinas?page=${page}&size=5`);
-    const data = await res.json();
+  const res = await fetch(`${API}/rutinas?page=${page}&size=5`);
+  const data = await res.json();
 
-    totalPaginas = data.totalPages;
+  totalPaginas = data.totalPages;
 
-    const contenedor = document.getElementById("contenedor-rutinas");
-    contenedor.innerHTML = "";
+  const contenedor = document.getElementById("contenedor-rutinas");
+  contenedor.innerHTML = "";
 
-    data.content.forEach(r => {
-        contenedor.innerHTML += `
-        <div class="dieta-card">
-            <h3 style="color:#4dd0e1;">${r.cliente?.nombre || "Sin nombre"}</h3>
-            <p>🏋️ ${r.cliente?.diasGym || '-'} días</p>
+  data.content.forEach(r => {
+    contenedor.innerHTML += `
+    <div class="dieta-card">
+      <h3 style="color:#4dd0e1;">${r.cliente?.nombre || "Sin nombre"}</h3>
 
-            <div class="acciones">
-                <button onclick="verRutina(${r.id})" class="btn-ver">👁 Ver</button>
-                <button onclick="editarRutina(${r.id})" class="btn-main">✏️ Editar</button>
-                <button onclick="eliminarRutina(${r.id})" class="btn-delete">🗑</button>
-            </div>
-        </div>`;
-    });
+      <div class="acciones">
+        <button onclick="verRutina(${r.id})" class="btn-ver">👁 Ver</button>
+        <button onclick="editarRutina(${r.id})" class="btn-main">✏️ Editar</button>
+        <button onclick="eliminarRutina(${r.id})" class="btn-delete">🗑</button>
+      </div>
+    </div>`;
+  });
 
-    actualizarPaginaUI();
+  actualizarPaginaUI();
 }
 
 /* ===================== VER ===================== */
 async function verPlan(id){
-    const res = await fetch(`${API}/planes/${id}`);
-    const data = await res.json();
+  const res = await fetch(`${API}/planes/${id}`);
+  const data = await res.json();
 
-    document.getElementById("visor").innerHTML = data.html;
+  document.getElementById("visor").innerHTML = data.html;
 }
 
 async function verRutina(id){
-    const res = await fetch(`${API}/rutinas/${id}`);
-    const data = await res.json();
+  const res = await fetch(`${API}/rutinas/${id}`);
+  const data = await res.json();
 
-    document.getElementById("visor").innerHTML = data.rutinaHtml;
+  if(!data.rutinaHtml){
+    alert("❌ No hay rutina guardada");
+    return;
+  }
+
+  document.getElementById("visor").innerHTML = data.rutinaHtml;
 }
 
 /* ===================== EDITAR ===================== */
 async function editarPlan(id){
-    const res = await fetch(`${API}/planes/${id}`);
-    const data = await res.json();
+  const res = await fetch(`${API}/planes/${id}`);
+  const data = await res.json();
 
-    localStorage.setItem("planEditarId", data.id);
-    localStorage.setItem("clienteEditar", JSON.stringify(data.cliente));
-    localStorage.setItem("modoEdicion", "true");
+  localStorage.setItem("planEditarId", data.id);
+  localStorage.setItem("clienteEditar", JSON.stringify(data.cliente));
+  localStorage.setItem("modoEdicion", "true");
 
-    window.location.href = "index.html";
+  window.location.href = "index.html";
 }
 
 async function editarRutina(id){
-    const res = await fetch(`${API}/rutinas/${id}`);
-    const data = await res.json();
+  const res = await fetch(`${API}/rutinas/${id}`);
+  const data = await res.json();
 
-    localStorage.setItem("rutinaEditarId", data.id);
-    localStorage.setItem("clienteEditar", JSON.stringify(data.cliente));
-    localStorage.setItem("modoEdicion", "true");
+  localStorage.setItem("rutinaEditarId", data.id);
+  localStorage.setItem("clienteEditar", JSON.stringify(data.cliente));
+  localStorage.setItem("modoEdicion", "true");
 
-    window.location.href = "index.html";
+  window.location.href = "index.html";
 }
 
 /* ===================== DELETE ===================== */
 async function eliminarPlan(id){
-    if(!confirm("¿Eliminar plan?")) return;
-    await fetch(`${API}/planes/${id}`, {method:"DELETE"});
-    cargarPlanes(paginaActual);
+  if(!confirm("¿Eliminar plan?")) return;
+  await fetch(`${API}/planes/${id}`, {method:"DELETE"});
+  cargarPlanes();
 }
 
 async function eliminarRutina(id){
-    if(!confirm("¿Eliminar rutina?")) return;
-    await fetch(`${API}/rutinas/${id}`, {method:"DELETE"});
-    cargarRutinas(paginaActual);
+  if(!confirm("¿Eliminar rutina?")) return;
+  await fetch(`${API}/rutinas/${id}`, {method:"DELETE"});
+  cargarRutinas();
 }
 
 /* ===================== BUSCAR ===================== */
 async function buscar(){
-    let q = document.getElementById("busqueda").value;
+  let q = document.getElementById("busqueda").value;
 
-    if(q === ""){
-        vistaActual === "dietas" ? cargarPlanes() : cargarRutinas();
-        return;
-    }
+  if(q === ""){
+    vistaActual==="dietas" ? cargarPlanes() : cargarRutinas();
+    return;
+  }
 
-    if(vistaActual === "dietas"){
-        const res = await fetch(`${API}/planes/buscar?q=${q}`);
-        const data = await res.json();
+  if(vistaActual==="dietas"){
+    const res = await fetch(`${API}/planes/buscar?q=${q}`);
+    const data = await res.json();
 
-        let contenedor = document.getElementById("contenedor-planes");
-        contenedor.innerHTML = "";
+    let contenedor = document.getElementById("contenedor-planes");
+    contenedor.innerHTML = "";
 
-        data.forEach(p=>{
-            contenedor.innerHTML += `
-            <div class="dieta-card">
-                <h3>${p.cliente?.nombre}</h3>
-                <button onclick="verPlan(${p.id})" class="btn-ver">Ver</button>
-            </div>`;
-        });
-    }
+    data.forEach(p=>{
+      contenedor.innerHTML += `
+      <div class="dieta-card">
+        <h3>${p.cliente?.nombre}</h3>
+        <button onclick="verPlan(${p.id})" class="btn-ver">Ver</button>
+      </div>`;
+    });
+  }
 }
 
 /* ===================== PAGINACION ===================== */
 function paginaSiguiente(){
-    if(paginaActual < totalPaginas-1){
-        paginaActual++;
-        vistaActual==="dietas" ? cargarPlanes(paginaActual) : cargarRutinas(paginaActual);
-    }
+  if(paginaActual < totalPaginas-1){
+    paginaActual++;
+    vistaActual==="dietas" ? cargarPlanes(paginaActual) : cargarRutinas(paginaActual);
+  }
 }
 
 function paginaAnterior(){
-    if(paginaActual > 0){
-        paginaActual--;
-        vistaActual==="dietas" ? cargarPlanes(paginaActual) : cargarRutinas(paginaActual);
-    }
+  if(paginaActual > 0){
+    paginaActual--;
+    vistaActual==="dietas" ? cargarPlanes(paginaActual) : cargarRutinas(paginaActual);
+  }
 }
 
 function actualizarPaginaUI(){
-    document.getElementById("pagina-info").innerText =
-        `Página ${paginaActual + 1}`;
+  document.getElementById("pagina-info").innerText =
+    `Página ${paginaActual + 1}`;
 }
 
 /* ===================== PDF ===================== */
 async function exportarPDF(){
-    const { jsPDF } = window.jspdf;
-    const elemento = document.getElementById("visor");
+  const { jsPDF } = window.jspdf;
+  const elemento = document.getElementById("visor");
 
-    if(!elemento.innerText.trim()){
-        alert("Nada que exportar bro 🔥");
-        return;
-    }
+  if(!elemento.innerText.trim()){
+    alert("Nada que exportar bro 🔥");
+    return;
+  }
 
-    const canvas = await html2canvas(elemento, {scale:2});
-    const img = canvas.toDataURL("image/png");
+  const canvas = await html2canvas(elemento, {scale:2});
+  const img = canvas.toDataURL("image/png");
 
-    const pdf = new jsPDF();
-    pdf.addImage(img, 'PNG', 10, 10, 180, 250);
-    pdf.save("plan.pdf");
+  const pdf = new jsPDF();
+  pdf.addImage(img, 'PNG', 10, 10, 180, 250);
+  pdf.save("plan.pdf");
 }
 
 /* INIT */
 mostrarDietas();
 
-/* LOGOUT */
 function logout(){
   localStorage.removeItem("token");
   window.location.href = "login.html";
