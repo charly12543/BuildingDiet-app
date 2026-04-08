@@ -89,7 +89,8 @@
 </div>
 </section>
 
-<script>
+
+ <script>
 const API = "http://localhost:8080/api";
 
 /* ===================== EDIT MODE AUTOLOAD ===================== */
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("tomaWhey").value = cliente.tomaWhey ? "true":"false";
   }
 
-  // 🔥 EDITANDO DIETA
+  // EDITANDO DIETA
   if(planId){
     document.getElementById("tituloModo").innerText = "✏️ Editando dieta";
 
@@ -121,7 +122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("resultadoPRO").innerHTML = data.html;
   }
 
-  // 🔥 EDITANDO RUTINA (FIX CLAVE)
+  // EDITANDO RUTINA
   if(rutinaId){
     document.getElementById("tituloModo").innerText = "✏️ Editando rutina";
 
@@ -133,42 +134,53 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 
+/* ===================== GET CLIENTE COMPLETO ===================== */
+function getClienteData(){
+  return {
+    nombre: document.getElementById("nombreCliente").value,
+    peso: parseFloat(document.getElementById("peso").value) || 0,
+    altura: parseFloat(document.getElementById("altura").value) || 0,
+    edad: parseInt(document.getElementById("edad").value) || 0,
+    sexo: document.getElementById("sexo").value,
+    objetivo: document.getElementById("objetivo").value,
+    nivel: document.getElementById("nivel").value,
+    diasGym: parseInt(document.getElementById("diasGym").value) || 3,
+    tomaWhey: document.getElementById("tomaWhey").value === "true"
+  };
+}
+
 /* ===================== GENERAR DIETA ===================== */
 function usarPro(){
-  let nombre = document.getElementById("nombreCliente").value;
+  let cliente = getClienteData();
 
   let html = `
   <div class="dieta-card">
-    <h2>${nombre}</h2>
+    <h2>${cliente.nombre}</h2>
     <p>Dieta generada correctamente 🔥</p>
   </div>`;
 
   document.getElementById("resultadoPRO").innerHTML = html;
 
-  guardarPlanBackend();
+  guardarPlanBackend(cliente, html);
 }
 
 /* ===================== GENERAR RUTINA ===================== */
 function generarRutina(){
+  let cliente = getClienteData();
+
   let html = `
   <div class="dieta-card">
     <h2>🏋️ Rutina PRO</h2>
-    <p>Rutina generada correctamente 🔥</p>
+    <p>${cliente.diasGym} días por semana</p>
   </div>`;
 
   document.getElementById("resultadoPRO").innerHTML = html;
 
-  guardarRutinaBackend();
+  guardarRutinaBackend(cliente, html);
 }
 
 /* ===================== SAVE PLAN ===================== */
-async function guardarPlanBackend(){
-
-  let html = document.getElementById("resultadoPRO").innerHTML;
-
-  let cliente = {
-    nombre: document.getElementById("nombreCliente").value
-  };
+async function guardarPlanBackend(cliente, html){
 
   let planId = localStorage.getItem("planEditarId");
 
@@ -183,20 +195,24 @@ async function guardarPlanBackend(){
   await fetch(url,{
     method:method,
     headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({cliente, html})
+    body:JSON.stringify({
+      cliente,
+      html,
+      dieta:{
+        calorias:"2000 kcal",
+        proteina:"150 g",
+        carbos:"200 g",
+        grasa:"60 g",
+        clienteInfo:{ fase:1 }
+      }
+    })
   });
 
   localStorage.removeItem("planEditarId");
 }
 
 /* ===================== SAVE RUTINA ===================== */
-async function guardarRutinaBackend(){
-
-  let html = document.getElementById("resultadoPRO").innerHTML;
-
-  let cliente = {
-    nombre: document.getElementById("nombreCliente").value
-  };
+async function guardarRutinaBackend(cliente, html){
 
   let rutinaId = localStorage.getItem("rutinaEditarId");
 
@@ -211,7 +227,10 @@ async function guardarRutinaBackend(){
   await fetch(url,{
     method:method,
     headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({cliente, rutinaHtml:html})
+    body:JSON.stringify({
+      cliente,
+      rutinaHtml:html
+    })
   });
 
   localStorage.removeItem("rutinaEditarId");
@@ -223,9 +242,11 @@ function logout(){
   window.location.href="login.html";
 }
 
-/* ===================== LIMPIAR ===================== */
+/* ===================== LIMPIAR CLIENTE ===================== */
 function limpiarCliente(){
-  localStorage.clear();
+  localStorage.removeItem("clienteEditar");
+  localStorage.removeItem("planEditarId");
+  localStorage.removeItem("rutinaEditarId");
   location.reload();
 }
 </script>
