@@ -331,34 +331,78 @@ function actualizarPaginaUI(){
 
 /* ===================== PDF ===================== */
 async function exportarPDF(){
+
   const { jsPDF } = window.jspdf;
   const elemento = document.getElementById("visor");
 
-  const canvas = await html2canvas(elemento);
-  const img = canvas.toDataURL("image/png");
+  if(!elemento.innerHTML.trim()){
+    alert("Primero visualiza algo bro 🔥");
+    return;
+  }
 
-  const pdf = new jsPDF('p','mm','a4');
+  // 🔥 CLON LIMPIO
+  let clon = elemento.cloneNode(true);
 
-  const imgWidth = 190;
+  clon.style.background = "#ffffff";
+  clon.style.color = "#000";
+  clon.style.padding = "20px";
+  clon.style.width = "800px";
+  clon.style.boxSizing = "border-box";
+  clon.style.position = "absolute";
+  clon.style.left = "-9999px";
+
+  // 🔥 eliminar sombras pesadas
+  clon.querySelectorAll("*").forEach(el => {
+    el.style.boxShadow = "none";
+    el.style.textShadow = "none";
+  });
+
+  // 🔥 quitar emojis (rompen PDF)
+  clon.innerHTML = clon.innerHTML.replace(/[\u{1F300}-\u{1F6FF}]/gu, "");
+
+  document.body.appendChild(clon);
+
+  const canvas = await html2canvas(clon, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff"
+  });
+
+  document.body.removeChild(clon);
+
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const pageWidth = 210;
   const pageHeight = 297;
-  const imgHeight = canvas.height * imgWidth / canvas.width;
 
-  let heightLeft = imgHeight;
+  const margin = 10;
+  const usableWidth = pageWidth - margin * 2;
+
+  const imgWidth = usableWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
   let position = 0;
 
-  pdf.addImage(img, 'PNG', 10, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
+  while(position < imgHeight){
 
-  while (heightLeft > 0) {
-    position = heightLeft - imgHeight;
-    pdf.addPage();
-    pdf.addImage(img, 'PNG', 10, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+    if(position > 0){
+      pdf.addPage();
+    }
+
+    pdf.addImage(
+      canvas,
+      "PNG",
+      margin,
+      10 - position,
+      imgWidth,
+      imgHeight
+    );
+
+    position += pageHeight;
   }
 
   pdf.save("plan.pdf");
 }
-
 /* INIT */
 mostrarDietas();
 
