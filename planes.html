@@ -198,18 +198,20 @@ async function cargarRutinas(page = 0){
       return;
     }
 
-    data.content.forEach(r => {
-      contenedor.innerHTML += `
-      <div class="dieta-card">
-        <h3>${r.cliente?.nombre || "Sin nombre"}</h3>
+    ddata.content.forEach(r => {
+  contenedor.innerHTML += `
+  <div class="dieta-card">
+    <h3>${r.cliente?.nombre || "Sin nombre"}</h3>
+    <p>ID: ${r.id}</p>
+    <p>${r.fecha || ""}</p>
 
-        <div class="acciones">
-          <button class="btn-ver" onclick="verRutina(${r.id})">👁 Ver</button>
-          <button class="btn-ver" onclick="editarRutina(${r.id})">✏️ Editar</button>
-          <button class="btn-delete" onclick="eliminarRutina(${r.id})">🗑</button>
-        </div>
-      </div>`;
-    });
+    <div class="acciones">
+      <button class="btn-ver" onclick="verRutina(${r.id})">👁 Ver</button>
+      <button class="btn-ver" onclick="editarRutina(${r.id})">✏️ Editar</button>
+      <button class="btn-delete" onclick="eliminarRutina(${r.id})">🗑</button>
+    </div>
+  </div>`;
+});
 
     actualizarPaginaUI();
 
