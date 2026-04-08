@@ -730,12 +730,12 @@ async function guardarPlanBackend(datos, dieta){
 async function guardarRutinaBackend(){  
   try {  
 
- 
-    let html = document.getElementById("resultadoPRO").innerHTML;
+    // 🔥 AHORA SÍ CORRECTO
+    let html = document.getElementById("resultadoRutina").innerHTML;
 
-     if(!html || html.includes("Rutina PRO")){
-     alert("Primero genera la dieta bro 🔥");
-    return;
+    if(!html || html.trim() === ""){
+      alert("Primero genera la rutina bro 🔥");
+      return;
     }
 
     let cliente = {
@@ -790,6 +790,9 @@ async function guardarRutinaBackend(){
     console.error("❌ Error rutina:", err);  
   }  
 }
+
+
+ 
 
 /* log - Out */  
 function logout(){
