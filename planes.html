@@ -203,11 +203,15 @@ async function editarRutina(id){
 
 /* ===================== DELETE ===================== */
 async function eliminarPlan(id){
+  if(!confirm("¿Seguro que quieres eliminar este plan?")) return;
+
   await fetch(`${API}/planes/${id}`, {method:"DELETE"});
   cargarPlanes();
 }
 
 async function eliminarRutina(id){
+  if(!confirm("¿Seguro que quieres eliminar esta rutina?")) return;
+
   await fetch(`${API}/rutinas/${id}`, {method:"DELETE"});
   cargarRutinas();
 }
@@ -278,8 +282,25 @@ async function exportarPDF(){
   const canvas = await html2canvas(elemento);
   const img = canvas.toDataURL("image/png");
 
-  const pdf = new jsPDF();
-  pdf.addImage(img, 'PNG', 10, 10, 180, 250);
+  const pdf = new jsPDF('p','mm','a4');
+
+  const imgWidth = 190;
+  const pageHeight = 297;
+  const imgHeight = canvas.height * imgWidth / canvas.width;
+
+  let heightLeft = imgHeight;
+  let position = 0;
+
+  pdf.addImage(img, 'PNG', 10, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+
+  while (heightLeft > 0) {
+    position = heightLeft - imgHeight;
+    pdf.addPage();
+    pdf.addImage(img, 'PNG', 10, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+
   pdf.save("plan.pdf");
 }
 
