@@ -229,10 +229,43 @@ async function verPlan(id){
 }
 
 async function verRutina(id){
-  const res = await fetch(`${API}/rutinas/${id}`);
-  const data = await res.json();
 
-  document.getElementById("visor").innerHTML = data.rutinaHtml || "<p>❌ No hay rutina</p>";
+  try{
+
+    // 🔥 limpiar visor antes
+    document.getElementById("visor").innerHTML = "<p>⏳ Cargando rutina...</p>";
+
+    const res = await fetch(`${API}/rutinas/${id}`);
+
+    if(!res.ok){
+      const text = await res.text();
+      console.error("❌ ERROR BACK:", text);
+
+      document.getElementById("visor").innerHTML =
+        "<p>❌ Error cargando rutina</p>";
+      return;
+    }
+
+    const data = await res.json();
+
+    console.log("🔥 RUTINA VER:", data);
+
+    if(!data || !data.rutinaHtml){
+      document.getElementById("visor").innerHTML =
+        "<p>⚠ Rutina vacía</p>";
+      return;
+    }
+
+    // 🔥 mostrar correcta
+    document.getElementById("visor").innerHTML = data.rutinaHtml;
+
+  } catch(error){
+
+    console.error("❌ ERROR FETCH:", error);
+
+    document.getElementById("visor").innerHTML =
+      "<p>❌ Error de conexión</p>";
+  }
 }
 
 /* ===================== EDIT ===================== */
