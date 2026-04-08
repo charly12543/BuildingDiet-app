@@ -99,18 +99,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   let rutinaId = localStorage.getItem("rutinaEditarId");
 
   if(cliente.nombre){
-    document.getElementById("nombreCliente").value = cliente.nombre;
-    document.getElementById("peso").value = cliente.peso;
-    document.getElementById("altura").value = cliente.altura;
-    document.getElementById("edad").value = cliente.edad;
-    document.getElementById("sexo").value = cliente.sexo;
-    document.getElementById("objetivo").value = cliente.objetivo;
-    document.getElementById("nivel").value = cliente.nivel;
-    document.getElementById("diasGym").value = cliente.diasGym;
-    document.getElementById("tomaWhey").value = cliente.tomaWhey ? "true":"false";
+    Object.keys(cliente).forEach(k=>{
+      if(document.getElementById(k)){
+        document.getElementById(k).value = cliente[k];
+      }
+    });
   }
 
-  // EDITANDO DIETA
   if(planId){
     document.getElementById("tituloModo").innerText = "✏️ Editando dieta";
 
@@ -120,7 +115,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("resultadoPRO").innerHTML = data.html;
   }
 
-  // EDITANDO RUTINA
   if(rutinaId){
     document.getElementById("tituloModo").innerText = "✏️ Editando rutina";
 
@@ -132,53 +126,168 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 
-/* ===================== GET CLIENTE COMPLETO ===================== */
-function getClienteData(){
+
+/* ===================== GENERAR DIETA PRO (TUYA COMPLETA) ===================== */
+function generarDietaPRO(datos){
+
+  let {nombre, peso, altura, edad, objetivo, sexo, nivel, tomaWhey, fase} = datos;
+
+  if(altura > 3) altura = altura / 100;
+  if(!fase) fase = Math.floor(Math.random()*4)+1;
+
+  let esNino = edad < 14;
+  let esMujerVolumen = (sexo==="mujer" && objetivo==="volumen");
+
+  let imc = peso / (altura * altura);
+  let tipoFisico = "fit";
+
+  if(imc >= 35) tipoFisico = "obesidad_severa";
+  else if(imc >= 30) tipoFisico = "obesidad";
+  else if(imc >= 25) tipoFisico = "sobrepeso";
+
+  let bmr = 10*peso + 6.25*(altura*100) - 5*edad + (sexo==="mujer"?-161:5);
+  let calorias = Math.round(bmr * 1.5);
+
+  if(fase===2) calorias -= 100;
+  if(fase===3) calorias -= 200;
+  if(fase===4) calorias += (objetivo==="volumen"?300:-100);
+
+  if(tipoFisico==="obesidad_severa") calorias -= 900;
+  else if(tipoFisico==="obesidad") calorias -= 700;
+  else if(tipoFisico==="sobrepeso") calorias -= 400;
+
+  if(esMujerVolumen) calorias += 150;
+
+  let proteFactor = 2.2;
+  if(sexo==="mujer") proteFactor = 1.8;
+  if(esNino) proteFactor = 1.2;
+
+  if(nivel==="competidor"){
+    proteFactor = 2.5;
+    if(fase>=3) proteFactor = 2.8;
+    if(fase===4) proteFactor = 3;
+  }
+
+  if(esMujerVolumen) proteFactor = 1.7;
+
+  let proteina = Math.round(peso * proteFactor);
+  let grasa = Math.round((calorias * 0.25)/9);
+  let carbos = Math.round((calorias - (proteina*4 + grasa*9)) / 4);
+
+  let comidas = [];
+
+  function random(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function proteFuente(){
+    return `<ul>
+      <li>Pollo</li>
+      <li>Carne</li>
+      <li>Pescado</li>
+      <li>Atún</li>
+      <li>Huevos</li>
+    </ul>`;
+  }
+
+  comidas.push({nombre:"Desayuno", proteina:"Huevos", carbos:"Pan", grasa:"Almendras"});
+  comidas.push({nombre:"Comida", proteina:proteFuente(), carbos:"Arroz", grasa:"Aguacate"});
+  comidas.push({nombre:"Cena", proteina:proteFuente(), carbos:"Ligero", grasa:"Aguacate"});
+
   return {
-    nombre: document.getElementById("nombreCliente").value,
-    peso: parseFloat(document.getElementById("peso").value) || 0,
-    altura: parseFloat(document.getElementById("altura").value) || 0,
-    edad: parseInt(document.getElementById("edad").value) || 0,
-    sexo: document.getElementById("sexo").value,
-    objetivo: document.getElementById("objetivo").value,
-    nivel: document.getElementById("nivel").value,
-    diasGym: parseInt(document.getElementById("diasGym").value) || 3,
-    tomaWhey: document.getElementById("tomaWhey").value === "true"
+    titulo:`🔥 Dieta PRO (${nombre}) – Fase ${fase}`,
+    clienteInfo:{nombre,edad,peso,altura,sexo,nivel,objetivo,fase},
+    calorias:`${calorias} kcal`,
+    proteina:`${proteina} g`,
+    carbos:`${carbos} g`,
+    grasa:`${grasa} g`,
+    comidas
   };
 }
 
-/* ===================== GENERAR DIETA ===================== */
-function usarPro(){
-  let cliente = getClienteData();
+
+/* ===================== MOSTRAR DIETA (🔥 CLAVE) ===================== */
+function mostrarDieta(d){
 
   let html = `
   <div class="dieta-card">
-    <h2>${cliente.nombre}</h2>
-    <p>Dieta generada correctamente 🔥</p>
-  </div>`;
+    <h2>${d.titulo}</h2>
+
+    <p>🔥 Calorías: ${d.calorias}</p>
+    <p>🥩 Proteína: ${d.proteina}</p>
+    <p>🍚 Carbos: ${d.carbos}</p>
+    <p>🥑 Grasas: ${d.grasa}</p>
+
+    ${d.comidas.map(c=>`
+      <div class="card-meal">
+        <h4>${c.nombre}</h4>
+        <p>${c.proteina}</p>
+        <p>${c.carbos}</p>
+        <p>${c.grasa}</p>
+      </div>
+    `).join("")}
+  </div>
+  `;
 
   document.getElementById("resultadoPRO").innerHTML = html;
-
-  guardarPlanBackend(cliente, html);
 }
 
-/* ===================== GENERAR RUTINA ===================== */
+
+/* ===================== GENERAR RUTINA REAL ===================== */
 function generarRutina(){
-  let cliente = getClienteData();
+
+  let dias = parseInt(document.getElementById("diasGym").value) || 4;
 
   let html = `
   <div class="dieta-card">
     <h2>🏋️ Rutina PRO</h2>
-    <p>${cliente.diasGym} días por semana</p>
-  </div>`;
+    <p>${dias} días por semana</p>
+
+    <ul>
+      <li>Día 1: Pecho + tríceps</li>
+      <li>Día 2: Espalda + bíceps</li>
+      <li>Día 3: Pierna</li>
+      <li>Día 4: Hombro</li>
+    </ul>
+  </div>
+  `;
 
   document.getElementById("resultadoPRO").innerHTML = html;
 
-  guardarRutinaBackend(cliente, html);
+  guardarRutinaBackend();
 }
 
-/* ===================== SAVE PLAN ===================== */
-async function guardarPlanBackend(cliente, html){
+
+/* ===================== USAR PRO (🔥 FIX PRINCIPAL) ===================== */
+function usarPro(){
+
+  let datos = {
+    nombre: document.getElementById("nombreCliente").value,
+    peso: parseFloat(document.getElementById("peso").value),
+    altura: parseFloat(document.getElementById("altura").value),
+    edad: parseFloat(document.getElementById("edad").value),
+    sexo: document.getElementById("sexo").value,
+    objetivo: document.getElementById("objetivo").value,
+    nivel: document.getElementById("nivel").value,
+    tomaWhey: document.getElementById("tomaWhey").value==="true",
+    diasGym: parseInt(document.getElementById("diasGym").value) || 0
+  };
+
+  if(!datos.peso || !datos.altura || !datos.edad){
+    alert("Completa todos los datos bro 🔥");
+    return;
+  }
+
+  let dieta = generarDietaPRO(datos);
+
+  mostrarDieta(dieta);
+
+  guardarPlanBackend(datos, dieta);
+}
+
+
+/* ===================== GUARDAR PLAN BACKEND (🔥 FIX TOTAL) ===================== */
+async function guardarPlanBackend(datos, dieta){
+
+  let html = document.getElementById("resultadoPRO").innerHTML;
 
   let planId = localStorage.getItem("planEditarId");
 
@@ -194,23 +303,20 @@ async function guardarPlanBackend(cliente, html){
     method:method,
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
-      cliente,
-      html,
-      dieta:{
-        calorias:"2000 kcal",
-        proteina:"150 g",
-        carbos:"200 g",
-        grasa:"60 g",
-        clienteInfo:{ fase:1 }
-      }
+      cliente: datos,
+      dieta: dieta,
+      html: html
     })
   });
 
   localStorage.removeItem("planEditarId");
 }
 
-/* ===================== SAVE RUTINA ===================== */
-async function guardarRutinaBackend(cliente, html){
+
+/* ===================== GUARDAR RUTINA ===================== */
+async function guardarRutinaBackend(){
+
+  let html = document.getElementById("resultadoPRO").innerHTML;
 
   let rutinaId = localStorage.getItem("rutinaEditarId");
 
@@ -226,26 +332,27 @@ async function guardarRutinaBackend(cliente, html){
     method:method,
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
-      cliente,
-      rutinaHtml:html
+      cliente:{ nombre: document.getElementById("nombreCliente").value },
+      rutinaHtml: html
     })
   });
 
   localStorage.removeItem("rutinaEditarId");
 }
 
-/* ===================== LOGOUT ===================== */
-function logout(){
-  localStorage.removeItem("token");
-  window.location.href="login.html";
-}
 
-/* ===================== LIMPIAR CLIENTE ===================== */
+/* ===================== LIMPIAR (🔥 FIX) ===================== */
 function limpiarCliente(){
   localStorage.removeItem("clienteEditar");
   localStorage.removeItem("planEditarId");
   localStorage.removeItem("rutinaEditarId");
   location.reload();
+}
+
+/* ===================== LOGOUT ===================== */
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href="login.html";
 }
 </script>
 
