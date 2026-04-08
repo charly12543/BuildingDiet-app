@@ -75,7 +75,8 @@
   <button onclick="usarPro()">🔥 Generar Dieta PRO</button>
   <button onclick="generarRutina()" style="margin-top:10px;">🏋️‍♂️ Generar Rutina PRO</button>
 
-  <div id="resultadoPRO"></div>
+  <div id="resultadoPRO"></div> <!-- lo dejamos -->
+  <div id="resultadoRutina" style="display:none;"></div> <!-- NUEVO -->
   <button onclick="descargarPDF('dieta')" style="margin-top:15px;">📄 Descargar PDF Dieta</button>
   <button onclick="descargarPDF('rutina')" style="margin-top:5px;">📄 Descargar PDF Rutina</button>
 </div>
@@ -499,10 +500,13 @@ let mensajeCoach = generarMensajeCoach(dieta, datos);
 
   html += `</div>`;
 
+  // 🔥 SOLO AGREGAMOS ESTA LÍNEA
+  document.getElementById("resultadoRutina").style.display = "none";
+
   document.getElementById("resultadoPRO").innerHTML = html;
 }
 
-/* ===================== DESCARGAR PDF ===================== */
+ 
 /* ===================== DESCARGAR PDF FIX PRO ===================== */
 async function descargarPDF(tipo){
 
@@ -600,6 +604,7 @@ async function descargarPDF(tipo){
 function generarRutina(){
   let sexo=document.getElementById("sexo").value;
   let dias=parseInt(document.getElementById("diasGym").value)||3;
+
   function getSplit(){
     if(sexo==="mujer"){
       if(dias<=3) return ["Pierna + glúteo","Tren superior","Pierna"];
@@ -611,6 +616,7 @@ function generarRutina(){
       return ["Push","Pull","Pierna","Hombro","Pierna"];
     }
   }
+
   const ejercicios={
     "Pecho":["Press banca 4x10","Aperturas 3x12","Fondos 3x12"],
     "Espalda":["Remo barra 4x10","Jalón polea 3x12","Peso muerto 3x8"],
@@ -621,6 +627,7 @@ function generarRutina(){
     "Glúteo":["Hip thrust 4x12","Patada glúteo 3x15","Puente glúteo 3x15"],
     "Abdomen":["Plancha 3x60s","Crunch 3x15","Elevación piernas 3x12"]
   };
+
   const splitMap={
     "Push":["Pecho","Hombro","Tríceps"],
     "Pull":["Espalda","Bíceps"],
@@ -628,35 +635,42 @@ function generarRutina(){
     "Tren superior":["Pecho","Espalda","Hombro","Bíceps","Tríceps"],
     "Glúteo + abdomen":["Glúteo","Abdomen"]
   };
+
   let split=getSplit();
+
   let html=`<div class="dieta-card">
-  
     <div style="text-align:center; border-bottom:2px solid #d4af37; padding-bottom:15px; margin-bottom:20px;">
       <h1 style="color:#d4af37;">🔥 Charly Fitness</h1>
       <p>Rutina PRO Personalizada</p>
     </div>`;
 
-
-  
   split.forEach((dia,i)=>{
     html+=`<div class="card-meal">
       <h4>🏋️ Día ${i+1} - ${dia}</h4>`;
+
     let grupos = splitMap[dia] || [dia];
+
     grupos.forEach(g=>{
       let lista = ejercicios[g] || ["Ejercicio base 3x12"];
       html+=`<strong>${g}</strong><ul>`;
       lista.forEach(e=>{html+=`<li>${e}</li>`;});
       html+=`</ul>`;
     });
+
     html+=`<p>🔥 Cardio: ${sexo==="mujer"? "20-30 min":"20-35 min"}</p>
            <p>😴 Descanso: 60-90 seg</p>
     </div>`;
   });
-  html+=`</div>`;
-  document.getElementById("resultadoPRO").innerHTML=html;
-  guardarRutinaBackend(); // ✅ SOLO rutina
-}
 
+  html+=`</div>`;
+
+  // 🔥 FIX REAL
+  document.getElementById("resultadoPRO").innerHTML="";
+  document.getElementById("resultadoRutina").style.display="block";
+  document.getElementById("resultadoRutina").innerHTML=html;
+
+  guardarRutinaBackend();
+}
 /* ===================== guardarPlanBackend ===================== */  
 async function guardarPlanBackend(datos, dieta){
   try {
@@ -716,7 +730,13 @@ async function guardarPlanBackend(datos, dieta){
 async function guardarRutinaBackend(){  
   try {  
 
-    let html = document.getElementById("resultadoPRO").innerHTML;  
+ 
+    let html = document.getElementById("resultadoPRO").innerHTML;
+
+     if(!html || html.includes("Rutina PRO")){
+     alert("Primero genera la dieta bro 🔥");
+    return;
+    }
 
     let cliente = {
       nombre: document.getElementById("nombreCliente").value,
