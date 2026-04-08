@@ -119,55 +119,105 @@ function mostrarRutinas(){
 }
 /* ===================== PLANES ===================== */
 async function cargarPlanes(page = 0){
-  const res = await fetch(`${API}/planes?page=${page}&size=5`);
-  const data = await res.json();
 
-  totalPaginas = data.totalPages;
+  try{
 
-  const contenedor = document.getElementById("contenedor-planes");
-  contenedor.innerHTML = "";
+    const res = await fetch(`${API}/planes?page=${page}&size=5`);
 
-  data.content.forEach(plan => {
-    contenedor.innerHTML += `
-    <div class="dieta-card">
-      <h3>${plan.cliente?.nombre || "Sin nombre"}</h3>
-      <p>${plan.fecha || ""}</p>
+    if(!res.ok){
+      const text = await res.text();
+      console.error("❌ ERROR BACK:", text);
+      document.getElementById("contenedor-planes").innerHTML =
+        "<p>❌ Error cargando planes</p>";
+      return;
+    }
 
-      <div class="acciones">
-        <button class="btn-ver" onclick="verPlan(${plan.id})">👁 Ver</button>
-        <button class="btn-ver" onclick="editarPlan(${plan.id})">✏️ Editar</button>
-        <button class="btn-delete" onclick="eliminarPlan(${plan.id})">🗑</button>
-      </div>
-    </div>`;
-  });
+    const data = await res.json();
 
-  actualizarPaginaUI();
+    console.log("🔥 PLANES RESPONSE:", data);
+
+    totalPaginas = data.totalPages || 0;
+
+    const contenedor = document.getElementById("contenedor-planes");
+    contenedor.innerHTML = "";
+
+    if(!data.content || data.content.length === 0){
+      contenedor.innerHTML = "<p>⚠ No hay planes registrados</p>";
+      return;
+    }
+
+    data.content.forEach(plan => {
+      contenedor.innerHTML += `
+      <div class="dieta-card">
+        <h3>${plan.cliente?.nombre || "Sin nombre"}</h3>
+        <p>${plan.fecha || ""}</p>
+
+        <div class="acciones">
+          <button class="btn-ver" onclick="verPlan(${plan.id})">👁 Ver</button>
+          <button class="btn-ver" onclick="editarPlan(${plan.id})">✏️ Editar</button>
+          <button class="btn-delete" onclick="eliminarPlan(${plan.id})">🗑</button>
+        </div>
+      </div>`;
+    });
+
+    actualizarPaginaUI();
+
+  } catch(error){
+    console.error("❌ ERROR FETCH:", error);
+    document.getElementById("contenedor-planes").innerHTML =
+      "<p>❌ Error de conexión</p>";
+  }
 }
 
 /* ===================== RUTINAS ===================== */
 async function cargarRutinas(page = 0){
-  const res = await fetch(`${API}/rutinas?page=${page}&size=5`);
-  const data = await res.json();
 
-  totalPaginas = data.totalPages;
+  try{
 
-  const contenedor = document.getElementById("contenedor-rutinas");
-  contenedor.innerHTML = "";
+    const res = await fetch(`${API}/rutinas?page=${page}&size=5`);
 
-  data.content.forEach(r => {
-    contenedor.innerHTML += `
-    <div class="dieta-card">
-      <h3>${r.cliente?.nombre || "Sin nombre"}</h3>
+    if(!res.ok){
+      const text = await res.text();
+      console.error("❌ ERROR BACK:", text);
+      document.getElementById("contenedor-rutinas").innerHTML =
+        "<p>❌ Error cargando rutinas</p>";
+      return;
+    }
 
-      <div class="acciones">
-        <button class="btn-ver" onclick="verRutina(${r.id})">👁 Ver</button>
-        <button class="btn-ver" onclick="editarRutina(${r.id})">✏️ Editar</button>
-        <button class="btn-delete" onclick="eliminarRutina(${r.id})">🗑</button>
-      </div>
-    </div>`;
-  });
+    const data = await res.json();
 
-  actualizarPaginaUI();
+    console.log("🔥 RUTINAS RESPONSE:", data);
+
+    totalPaginas = data.totalPages || 0;
+
+    const contenedor = document.getElementById("contenedor-rutinas");
+    contenedor.innerHTML = "";
+
+    if(!data.content || data.content.length === 0){
+      contenedor.innerHTML = "<p>⚠ No hay rutinas registradas</p>";
+      return;
+    }
+
+    data.content.forEach(r => {
+      contenedor.innerHTML += `
+      <div class="dieta-card">
+        <h3>${r.cliente?.nombre || "Sin nombre"}</h3>
+
+        <div class="acciones">
+          <button class="btn-ver" onclick="verRutina(${r.id})">👁 Ver</button>
+          <button class="btn-ver" onclick="editarRutina(${r.id})">✏️ Editar</button>
+          <button class="btn-delete" onclick="eliminarRutina(${r.id})">🗑</button>
+        </div>
+      </div>`;
+    });
+
+    actualizarPaginaUI();
+
+  } catch(error){
+    console.error("❌ ERROR FETCH:", error);
+    document.getElementById("contenedor-rutinas").innerHTML =
+      "<p>❌ Error de conexión</p>";
+  }
 }
 
 /* ===================== VER ===================== */
