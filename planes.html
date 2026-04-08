@@ -97,6 +97,9 @@ function mostrarDietas(){
   document.getElementById("seccion-dietas").style.display="block";
   document.getElementById("seccion-rutinas").style.display="none";
 
+  // 🔥 FIX
+  document.getElementById("visor").innerHTML = "";
+
   cargarPlanes();
 }
 
@@ -109,9 +112,11 @@ function mostrarRutinas(){
   document.getElementById("seccion-dietas").style.display="none";
   document.getElementById("seccion-rutinas").style.display="block";
 
+  // 🔥 FIX
+  document.getElementById("visor").innerHTML = "";
+
   cargarRutinas();
 }
-
 /* ===================== PLANES ===================== */
 async function cargarPlanes(page = 0){
   const res = await fetch(`${API}/planes?page=${page}&size=5`);
@@ -170,14 +175,14 @@ async function verPlan(id){
   const res = await fetch(`${API}/planes/${id}`);
   const data = await res.json();
 
-  document.getElementById("visor").innerHTML = data.html;
+  document.getElementById("visor").innerHTML = data.html || "<p>❌ No hay dieta</p>";
 }
 
 async function verRutina(id){
   const res = await fetch(`${API}/rutinas/${id}`);
   const data = await res.json();
 
-  document.getElementById("visor").innerHTML = data.rutinaHtml; // 🔥 FIX
+  document.getElementById("visor").innerHTML = data.rutinaHtml || "<p>❌ No hay rutina</p>";
 }
 
 /* ===================== EDIT ===================== */
