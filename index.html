@@ -95,7 +95,12 @@
 
 
 
-
+<script>
+const API =
+  window.location.hostname === "localhost"
+    ? "http://localhost:8080/api"
+    : "https://buildingdiet-app.onrender.com/api";
+</script>
 
   
   
@@ -690,12 +695,14 @@ async function guardarPlanBackend(datos, dieta){
 
     let planId = localStorage.getItem("planEditarId");
 
-    let url = "http://localhost:8080/api/guardar-plan";
+  //  let url = "http://localhost:8080/api/guardar-plan";
+   let url = `${API}/guardar-plan`;
     let method = "POST";
 
     // 🔥 SI EXISTE → UPDATE
     if(planId){
-      url = `http://localhost:8080/api/planes/${planId}`;
+    //  url = `http://localhost:8080/api/planes/${planId}`;
+     url = `${API}/rutinas/${rutinaId}`;
       method = "PUT";
     }
 
@@ -752,11 +759,13 @@ async function guardarRutinaBackend(){
 
     let rutinaId = localStorage.getItem("rutinaEditarId");
 
-    let url = "http://localhost:8080/api/guardar-rutina";
+//    let url = "http://localhost:8080/api/guardar-rutina";
+    let url = `${API}/guardar-rutina`;
     let method = "POST";
 
     if(rutinaId){
-      url = `http://localhost:8080/api/rutinas/${rutinaId}`;
+  //    url = `http://localhost:8080/api/rutinas/${rutinaId}`;
+      url = `${API}/rutinas/${rutinaId}`;
       method = "PUT";
     }
 
