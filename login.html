@@ -86,7 +86,11 @@
 </div>
 
 <script>
-const API = "http://localhost:8080/api";
+// const API = "http://localhost:8080/api";
+  const API =
+  window.location.hostname === "localhost"
+    ? "http://localhost:8080/api"
+    : "https://buildingdiet-app.onrender.com/api";
 
 /* ===================== LOGIN ===================== */
 async function login(){
