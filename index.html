@@ -22,7 +22,7 @@
 <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 <ul class="nav-links" id="navLinks">
 <button onclick="logout()" class="btn-delete">Salir</button>  
-<li><a href=" planes.html" class="btn-main">🥗 Planes</a></li>
+<li><a href="planes.html" class="btn-main">🥗 Planes</a></li>
 </ul>
 </div>
 </nav>  
@@ -702,7 +702,8 @@ async function guardarPlanBackend(datos, dieta){
     // 🔥 SI EXISTE → UPDATE
     if(planId){
     //  url = `http://localhost:8080/api/planes/${planId}`;
-     url = `${API}/rutinas/${rutinaId}`;
+ //    url = `${API}/rutinas/${rutinaId}`;
+     ${API}/planes/${planId}
       method = "PUT";
     }
 
