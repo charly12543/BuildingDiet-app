@@ -186,19 +186,25 @@ async function cargarRutinas(page = 0){
 
     const data = await res.json();
 
-    console.log("🔥 RUTINAS RESPONSE:", data);
+console.log("🔥 RUTINAS RESPONSE:", data);
 
-    totalPaginas = data.totalPages || 0;
+totalPaginas = data.totalPages || 0;
 
-    const contenedor = document.getElementById("contenedor-rutinas");
-    contenedor.innerHTML = "";
+const contenedor = document.getElementById("contenedor-rutinas");
+contenedor.innerHTML = "";
 
-    if(!data.content || data.content.length === 0){
-      contenedor.innerHTML = "<p>⚠ No hay rutinas registradas</p>";
-      return;
-    }
+// 🔥 VALIDACION PRO
+if (!data || !data.content || data.content.length === 0) {
+  console.error("⚠ DATA VACIA:", data);
+  contenedor.innerHTML = "<p>⚠ No hay rutinas registradas</p>";
+  return;
+}
 
-    ddata.content.forEach(r => {
+// 🔥 DEBUG OPCIONAL
+console.log("DEBUG DATA:", data);
+
+// 🔥 RENDER
+data.content.forEach(r => {
   contenedor.innerHTML += `
   <div class="dieta-card">
     <h3>${r.cliente?.nombre || "Sin nombre"}</h3>
