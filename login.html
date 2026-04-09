@@ -97,6 +97,8 @@ async function login(){
   let usuario = document.getElementById("usuario").value;
   let password = document.getElementById("password").value;
 
+   console.log("🔥 Intentando login...");
+
   if(!usuario || !password){
     mostrarError("Completa los datos");
     return;
