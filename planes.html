@@ -76,11 +76,24 @@ if(!localStorage.getItem("token")){
 <script>
 
 //const API = "http://localhost:8080/api";
-  const API =
-  window.location.hostname === "localhost"
-    ? "http://localhost:8080/api"
-    : "https://buildingdiet-app.onrender.com/api";
+  const LOCAL_API = "http://localhost:8080/api";
+const PROD_API = "https://buildingdiet-app.onrender.com/api";
 
+async function getAPI() {
+  try {
+    const res = await fetch(PROD_API + "/health"); // endpoint simple
+    if (res.ok) return PROD_API;
+  } catch (e) {}
+
+  return LOCAL_API;
+}
+</script>
+
+
+
+
+  
+<script>
 let paginaActual = 0;
 let totalPaginas = 0;
 let vistaActual = "dietas";
