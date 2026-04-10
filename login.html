@@ -92,6 +92,22 @@
     ? "http://localhost:8080/api"
     : "https://buildingdiet-app.onrender.com/api";
 
+const LOCAL_API = "http://localhost:8080/api";
+const PROD_API = "https://buildingdiet-app.onrender.com/api";
+
+async function getAPI() {
+  try {
+    const res = await fetch(PROD_API + "/health"); // endpoint simple
+    if (res.ok) return PROD_API;
+  } catch (e) {}
+
+  return LOCAL_API;
+}
+
+
+
+  
+
 /* ===================== LOGIN ===================== */
 async function login(){
   let usuario = document.getElementById("usuario").value;
