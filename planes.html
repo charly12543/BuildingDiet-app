@@ -74,22 +74,23 @@ if(!localStorage.getItem("token")){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-const API =
-  window.location.hostname === "localhost"
-    ? LOCAL_API
-    : PROD_API;  
-
-//const API = "http://localhost:8080/api";
 const LOCAL_API = "http://localhost:8080/api";
 const PROD_API = "https://nutrition-backend-1-f2co.onrender.com/api";
 
-async function getAPI() {
-  try {
-    const res = await fetch(PROD_API + "/health"); // endpoint simple
-    if (res.ok) return PROD_API;
-  } catch (e) {}
+let API = LOCAL_API;
 
-  return LOCAL_API;
+async function initAPI(){
+  try {
+    const res = await fetch(PROD_API + "/health");
+    if(res.ok){
+      API = PROD_API;
+      console.log("🌍 Usando PROD");
+      return;
+    }
+  } catch(e){}
+
+  API = LOCAL_API;
+  console.log("💻 Usando LOCAL");
 }
 </script>
 
@@ -467,7 +468,10 @@ async function exportarPDF(){
   pdf.save("plan.pdf");
 }
 /* INIT */
-mostrarDietas();
+(async () => {
+  await initAPI();
+  mostrarDietas(); // 🔥 importante que vaya después
+})();
 
 /* LOGOUT */
 function logout(){
