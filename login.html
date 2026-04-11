@@ -86,18 +86,18 @@
 </div>
 
 <script>
-// const API = "http://localhost:8080/api";
-  const API =
-  window.location.hostname === "localhost"
-    ? "http://localhost:8080/api"
-    : "https://nutrition-backend-1-f2co.onrender.com/api";
-
 const LOCAL_API = "http://localhost:8080/api";
 const PROD_API = "https://nutrition-backend-1-f2co.onrender.com/api";
 
+let API = PROD_API; // default
+
+(async () => {
+  API = await getAPI();
+})();
+
 async function getAPI() {
   try {
-    const res = await fetch(PROD_API + "/health"); // endpoint simple
+    const res = await fetch(PROD_API + "/health");
     if (res.ok) return PROD_API;
   } catch (e) {}
 
@@ -106,7 +106,6 @@ async function getAPI() {
 
 
 
-  
 
 /* ===================== LOGIN ===================== */
 async function login(){
