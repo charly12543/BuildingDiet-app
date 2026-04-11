@@ -115,7 +115,10 @@ async function initAPI(){
 }
 
 // 🔥 ESTO ES LO IMPORTANTE
-initAPI();
+
+(async () => {
+  await initAPI();
+})(); 
 </script>
   
   
@@ -711,7 +714,7 @@ async function guardarPlanBackend(datos, dieta){
     let planId = localStorage.getItem("planEditarId");
 
   //  let url = "http://localhost:8080/api/guardar-plan";
-   const api = await getAPI();
+  // const api = await getAPI();
    let url = `${API}/guardar-plan`;
    let method = "POST";
 
