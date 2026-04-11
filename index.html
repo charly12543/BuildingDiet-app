@@ -94,22 +94,29 @@
 
 
 
-
 <script>
 const LOCAL_API = "http://localhost:8080/api";
 const PROD_API = "https://nutrition-backend-1-f2co.onrender.com/api";
- 
 
-async function getAPI() {
+let API = LOCAL_API; // valor por defecto
+
+async function initAPI(){
   try {
-    const res = await fetch(PROD_API + "/health"); // endpoint simple
-    if (res.ok) return PROD_API;
-  } catch (e) {}
+    const res = await fetch(PROD_API + "/health");
+    if(res.ok){
+      API = PROD_API;
+      console.log("🌍 Usando PROD");
+      return;
+    }
+  } catch(e){}
 
-  return LOCAL_API;
-} 
+  API = LOCAL_API;
+  console.log("💻 Usando LOCAL");
+}
+
+// 🔥 ESTO ES LO IMPORTANTE
+initAPI();
 </script>
-
   
   
 
@@ -704,8 +711,9 @@ async function guardarPlanBackend(datos, dieta){
     let planId = localStorage.getItem("planEditarId");
 
   //  let url = "http://localhost:8080/api/guardar-plan";
+   const api = await getAPI();
    let url = `${API}/guardar-plan`;
-    let method = "POST";
+   let method = "POST";
 
     // 🔥 SI EXISTE → UPDATE
     if(planId){
