@@ -74,9 +74,13 @@ if(!localStorage.getItem("token")){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
+const API =
+  window.location.hostname === "localhost"
+    ? LOCAL_API
+    : PROD_API;  
 
 //const API = "http://localhost:8080/api";
-  const LOCAL_API = "http://localhost:8080/api";
+const LOCAL_API = "http://localhost:8080/api";
 const PROD_API = "https://nutrition-backend-1-f2co.onrender.com/api";
 
 async function getAPI() {
