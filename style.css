@@ -264,7 +264,16 @@ body{
   font-weight:500;
 }
 .nav-links.active{
-  display:block;
+  display:flex;
+  flex-direction:column;
+  position:absolute;
+  top:60px;
+  right:20px;
+  background:#0b0b0b;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.6);
+  width:200px;
 }
 
 /* LOGO */
