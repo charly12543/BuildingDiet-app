@@ -695,14 +695,20 @@ async function descargarPDF(tipo){
 }
   
 /* ===================== RUTINA ===================== */
+/* ===================== RUTINA MODO DIOS ===================== */
 function generarRutina(){
-  let sexo=document.getElementById("sexo").value;
-  let dias=parseInt(document.getElementById("diasGym").value)||3;
+
+  let nombre = document.getElementById("nombreCliente").value || "Cliente";
+  let sexo = document.getElementById("sexo").value;
+  let dias = parseInt(document.getElementById("diasGym").value) || 3;
+  let nivel = document.getElementById("nivel").value;
+  let objetivo = document.getElementById("objetivo").value;
+  let fecha = new Date().toLocaleDateString();
 
   function getSplit(){
     if(sexo==="mujer"){
-      if(dias<=3) return ["Pierna + glúteo","Tren superior","Pierna"];
-      if(dias===4) return ["Glúteo","Espalda","Pierna","Glúteo + abdomen"];
+      if(dias<=3) return ["Glúteo","Pierna","Full"];
+      if(dias===4) return ["Glúteo","Pierna","Espalda","Glúteo + abdomen"];
       return ["Glúteo","Pierna","Espalda","Pierna","Glúteo"];
     } else {
       if(dias<=3) return ["Push","Pull","Pierna"];
@@ -711,18 +717,78 @@ function generarRutina(){
     }
   }
 
-  const ejercicios={
-    "Pecho":["Press banca 4x10","Aperturas 3x12","Fondos 3x12"],
-    "Espalda":["Remo barra 4x10","Jalón polea 3x12","Peso muerto 3x8"],
-    "Pierna":["Sentadilla 4x10","Prensa 3x12","Femoral 3x12","Pantorrilla 4x15"],
-    "Hombro":["Press militar 4x10","Elevaciones laterales 3x12","Pájaros 3x12"],
-    "Bíceps":["Curl barra 3x12","Curl martillo 3x12"],
-    "Tríceps":["Fondos 3x12","Extensión polea 3x12"],
-    "Glúteo":["Hip thrust 4x12","Patada glúteo 3x15","Puente glúteo 3x15"],
-    "Abdomen":["Plancha 3x60s","Crunch 3x15","Elevación piernas 3x12"]
+  const ejercicios = {
+
+    "Pecho":[
+      "Press banca 4x8-10",
+      "Press inclinado mancuernas 3x10",
+      "Aperturas en máquina 3x12",
+      "Fondos en paralelas 3x12",
+      "Cruces en polea 3x15"
+    ],
+
+    "Espalda":[
+      "Dominadas 4x fallo",
+      "Remo con barra 4x8",
+      "Jalón al pecho 3x12",
+      "Remo en polea 3x12",
+      "Pullover en polea 3x15"
+    ],
+
+    "Pierna":[
+      "Sentadilla libre 4x8",
+      "Prensa inclinada 4x12",
+      "Peso muerto rumano 3x10",
+      "Curl femoral 3x12",
+      "Extensión cuadriceps 3x15",
+      "Pantorrilla 5x15"
+    ],
+
+    "Hombro":[
+      "Press militar 4x8",
+      "Elevaciones laterales 4x12",
+      "Elevaciones frontales 3x12",
+      "Pájaros (posterior) 3x15",
+      "Encogimientos trapecio 3x15"
+    ],
+
+    "Bíceps":[
+      "Curl barra 4x10",
+      "Curl alterno mancuernas 3x12",
+      "Curl concentrado 3x12"
+    ],
+
+    "Tríceps":[
+      "Fondos 3x12",
+      "Extensión polea 3x12",
+      "Press francés 3x10"
+    ],
+
+    "Glúteo":[
+      "Hip thrust 4x12",
+      "Patada en polea 3x15",
+      "Puente glúteo 3x15",
+      "Abducción máquina 3x20",
+      "Sentadilla sumo 3x12"
+    ],
+
+    "Abdomen":[
+      "Crunch 3x20",
+      "Elevación piernas 3x15",
+      "Plancha 3x60s",
+      "Vacuum 3x30s"
+    ],
+
+    "Full":[
+      "Circuito full body 4 rondas",
+      "Sentadilla + press 12 reps",
+      "Burpees 10 reps",
+      "Remo mancuerna 12 reps",
+      "Abdomen 15 reps"
+    ]
   };
 
-  const splitMap={
+  const splitMap = {
     "Push":["Pecho","Hombro","Tríceps"],
     "Pull":["Espalda","Bíceps"],
     "Hombro + brazos":["Hombro","Bíceps","Tríceps"],
@@ -730,38 +796,91 @@ function generarRutina(){
     "Glúteo + abdomen":["Glúteo","Abdomen"]
   };
 
-  let split=getSplit();
+  let split = getSplit();
 
-  let html=`<div class="dieta-card">
-    <div style="text-align:center; border-bottom:2px solid #d4af37; padding-bottom:15px; margin-bottom:20px;">
-      <h1 style="color:#d4af37;">🔥 Charly Fitness</h1>
-      <p>Rutina PRO Personalizada</p>
-    </div>`;
+  // 🔥 MENSAJE PRO
+  function getMensaje(){
+    let msg = "";
+
+    if(objetivo==="definicion"){
+      msg = "Rutina enfocada en pérdida de grasa manteniendo masa muscular.";
+    }
+
+    if(objetivo==="volumen"){
+      msg = "Rutina enfocada en hipertrofia y ganancia muscular.";
+    }
+
+    if(nivel==="avanzado" || nivel==="competidor"){
+      msg += " Nivel avanzado con enfoque en intensidad y progresión.";
+    }
+
+    return msg;
+  }
+
+  let html = `
+  <div class="dieta-card">
+
+    <!-- 🔥 HEADER PRO -->
+    <div style="
+      text-align:center;
+      border-bottom:2px solid #d4af37;
+      padding-bottom:15px;
+      margin-bottom:20px;
+    ">
+      <h1 style="color:#d4af37;">💎 Charly Fitness</h1>
+      <h2>${nombre}</h2>
+      <p>${fecha}</p>
+      <p style="opacity:0.8;">${getMensaje()}</p>
+    </div>
+  `;
 
   split.forEach((dia,i)=>{
-    html+=`<div class="card-meal">
-      <h4>🏋️ Día ${i+1} - ${dia}</h4>`;
+
+    html += `<div class="card-meal">
+      <h3>🏋️ Día ${i+1} - ${dia}</h3>`;
 
     let grupos = splitMap[dia] || [dia];
 
     grupos.forEach(g=>{
       let lista = ejercicios[g] || ["Ejercicio base 3x12"];
-      html+=`<strong>${g}</strong><ul>`;
-      lista.forEach(e=>{html+=`<li>${e}</li>`;});
-      html+=`</ul>`;
+
+      html += `<strong>${g}</strong><ul>`;
+
+      lista.forEach(e=>{
+        html += `<li>${e}</li>`;
+      });
+
+      html += `</ul>`;
     });
 
-    html+=`<p>🔥 Cardio: ${sexo==="mujer"? "20-30 min":"20-35 min"}</p>
-           <p>😴 Descanso: 60-90 seg</p>
+    html += `
+      <p>🔥 Cardio: ${objetivo==="definicion" ? "30-40 min" : "15-25 min"}</p>
+      <p>😴 Descanso: 60-90 seg</p>
+      <p>⚡ Intensidad: ${nivel==="competidor" ? "Alta" : "Media"}</p>
     </div>`;
   });
 
-  html+=`</div>`;
+  // 🔥 TIPS PRO
+  html += `
+    <div class="card-meal">
+      <h4>📌 Recomendaciones PRO</h4>
+      ✔ Progresión de cargas semanal<br>
+      ✔ Técnica perfecta antes de subir peso<br>
+      ✔ Hidratación constante<br>
+      ✔ Dormir mínimo 7 horas<br>
+    </div>
 
-  // 🔥 FIX REAL
-  document.getElementById("resultadoPRO").innerHTML="";
-  document.getElementById("resultadoRutina").style.display="block";
-  document.getElementById("resultadoRutina").innerHTML=html;
+    <p style="text-align:center; font-weight:bold; margin-top:25px;">
+      💎 Rutina personalizada por Charly Fitness
+    </p>
+
+  </div>
+  `;
+
+  // 🔥 OUTPUT
+  document.getElementById("resultadoPRO").innerHTML = "";
+  document.getElementById("resultadoRutina").style.display = "block";
+  document.getElementById("resultadoRutina").innerHTML = html;
 
   guardarRutinaBackend();
 }
