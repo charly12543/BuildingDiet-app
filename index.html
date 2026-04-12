@@ -28,11 +28,53 @@
 </nav>  
 
 <!-- HERO -->    
-<section class="hero">
-  <h1>🔥 Calculadora PRO (Privada)</h1>
-  <p>Genera dieta + rutina personalizada</p>
-  <h3><button onclick="limpiarCliente()" style="margin-top:10px; background:#999;">
-  ❌ Nuevo cliente</button></h3>
+<section class="hero" style="
+  background: linear-gradient(135deg, #000000, #1a1a1a);
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+  border-bottom: 2px solid #d4af37;
+">
+
+  <h1 style="
+    font-size: 2.5rem;
+    color: #d4af37;
+    margin-bottom: 10px;
+  ">
+    💎 Charly Fitness PRO
+  </h1>
+
+  <p style="
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: auto;
+    opacity: 0.9;
+  ">
+    Genera dietas y rutinas personalizadas con precisión profesional.
+  </p>
+
+ <p style="margin-top:15px; font-size:13px; opacity:0.7;">
+⚡ Backend conectado en tiempo real • Datos guardados automáticamente
+</p>
+
+  <div style="margin-top:20px;">
+    <button onclick="usarPro()" class="btn-main">
+      🔥 Generar Dieta
+    </button>
+
+    <button onclick="generarRutina()" style="
+      margin-left:10px;
+      background:#d4af37;
+      color:#000;
+      border:none;
+      padding:10px 20px;
+      border-radius:8px;
+      cursor:pointer;
+    ">
+      🏋️ Generar Rutina
+    </button>
+  </div>
+
 </section>
 
 <!-- CALCULADORA -->   
@@ -531,36 +573,62 @@ let mensajeCoach = generarMensajeCoach(dieta, datos);
 
  
 /* ===================== DESCARGAR PDF FIX PRO ===================== */
+/* ===================== DESCARGAR PDF FIX PRO FULL ===================== */
 async function descargarPDF(tipo){
 
   const { jsPDF } = window.jspdf;
-  const elemento = document.getElementById("resultadoPRO");
 
-  if(!elemento.innerText.trim()){
+  // 🔥 DETECTAR SI ES DIETA O RUTINA
+  const elemento = tipo === "rutina"
+    ? document.getElementById("resultadoRutina")
+    : document.getElementById("resultadoPRO");
+
+  if(!elemento || !elemento.innerText.trim()){
     alert("Primero genera algo bro 🔥");
     return;
   }
 
   let nombre = document.getElementById("nombreCliente").value || "Cliente";
 
-  // 🔥 CLON LIMPIO (clave para evitar bugs)
+  // 🔥 CLON LIMPIO
   let clon = elemento.cloneNode(true);
 
   clon.style.background = "#ffffff";
-  clon.style.color = "#000";
+  clon.style.color = "#000000";
   clon.style.padding = "20px";
   clon.style.width = "800px";
   clon.style.boxSizing = "border-box";
   clon.style.position = "absolute";
   clon.style.left = "-9999px";
 
-  // 🔥 eliminar sombras pesadas (rompen canvas)
+  // 🔥 TIPOGRAFÍA PRO
+  clon.style.fontFamily = "Arial, sans-serif";
+  clon.style.lineHeight = "1.5";
+
+  // 🔥 FORZAR MODO CLARO TOTAL (FIX REAL)
   clon.querySelectorAll("*").forEach(el => {
+    el.style.background = "#ffffff";
+    el.style.color = "#000000";
+    el.style.borderColor = "#cccccc";
     el.style.boxShadow = "none";
     el.style.textShadow = "none";
   });
 
-  // 🔥 quitar emojis (evita errores)
+  // 🔥 MEJORAR TARJETAS
+  clon.querySelectorAll(".card-meal").forEach(el => {
+    el.style.border = "1px solid #dddddd";
+    el.style.borderRadius = "10px";
+    el.style.padding = "10px";
+    el.style.marginBottom = "10px";
+  });
+
+  clon.querySelectorAll(".dieta-card").forEach(el => {
+    el.style.border = "1px solid #cccccc";
+    el.style.padding = "15px";
+    el.style.borderRadius = "12px";
+  });
+
+  // 🔥 QUITAR EMOJIS (evita errores PDF)
   clon.innerHTML = clon.innerHTML.replace(/[\u{1F300}-\u{1F6FF}]/gu, "");
 
   document.body.appendChild(clon);
@@ -598,16 +666,19 @@ async function descargarPDF(tipo){
       pdf.addPage();
     }
 
-    // HEADER
+    // 🔥 HEADER NEGRO PRO
     pdf.setFillColor(0,0,0);
     pdf.rect(0,0,pageWidth,15,"F");
 
+    // 🔥 LOGO
     pdf.addImage(logo, "PNG", 10, 2, 25, 10);
 
+    // 🔥 TEXTO MARCA
     pdf.setTextColor(212,175,55);
     pdf.setFontSize(10);
     pdf.text("Charly Fitness", pageWidth - 10, 10, null, null, "right");
 
+    // 🔥 CONTENIDO
     pdf.addImage(
       canvas,
       "PNG",
