@@ -17,14 +17,19 @@ if(!localStorage.getItem("token")){
 
 <nav class="navbar">
   <div class="nav-container">
+
     <a href="index.html" class="logo">
       <img src="images/logoGitHub.png">
     </a>
 
-    <ul class="nav-links">
+    <!-- 🔥 BOTON HAMBURGUESA -->
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+
+    <ul class="nav-links" id="navLinks">
       <li><a href="index.html">🏠 Inicio</a></li>
-      <button onclick="logout()" class="btn-delete">Salir</button>
+      <li><button onclick="logout()" class="btn-delete">Salir</button></li>
     </ul>
+
   </div>
 </nav>
 
@@ -478,6 +483,12 @@ function logout(){
   localStorage.removeItem("token");
   window.location.href = "login.html";
 }
+
+/* ===================== MENU MOBILE ===================== */
+function toggleMenu(){
+  const nav = document.getElementById("navLinks");
+  nav.classList.toggle("active");
+}  
 
 </script>
 
