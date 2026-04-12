@@ -21,8 +21,8 @@
 </a>
 <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 <ul class="nav-links" id="navLinks">
-<button onclick="logout()" class="btn-delete">Salir</button>  
-<li><a href="planes.html" class="btn-main">🥗 Planes</a></li>
+  <li><a href="planes.html" class="btn-main">🥗 Planes</a></li>
+  <li><button onclick="logout()" class="btn-delete">Salir</button></li>
 </ul>
 </div>
 </nav>  
@@ -894,6 +894,14 @@ function limpiarCliente(){
 
   alert("🆕 Modo nuevo cliente activado");
 }  
+
+// Menu Bar 
+/* ===================== MENU MOBILE ===================== */
+function toggleMenu(){
+  const nav = document.getElementById("navLinks");
+  nav.classList.toggle("active");
+}  
+  
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
