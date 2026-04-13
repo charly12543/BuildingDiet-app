@@ -2,6 +2,7 @@
 *{ margin:0; padding:0; box-sizing:border-box; }
 html, body{ overflow-x:hidden; }
 
+
 #visor {
   background: #0b0b0b;
   color: #eee;
@@ -604,6 +605,73 @@ section{ padding:60px 20px; max-width:800px; margin:auto; }
 #pagina-info{
   font-weight:bold;
   color:#d4af37;
+}
+
+/* ===== NAVBAR MODO DIOS ===== */
+
+@media (max-width:768px){
+
+  .menu-toggle{
+    display:block;
+    z-index:1001;
+  }
+
+  .nav-links{
+    position:fixed;
+    top:0;
+    right:-100%;
+    width:75%;
+    height:100vh;
+    background:#0b0b0b;
+    flex-direction:column;
+    padding:80px 25px;
+    gap:20px;
+    transition: right 0.35s ease;
+    z-index:1000;
+    display:flex; /* IMPORTANTE */
+  }
+
+  .nav-links.active{
+    right:0;
+  }
+
+  .nav-links li a{
+    font-size:18px;
+  }
+
+  .nav-links li{
+    width:100%;
+  }
+
+  .btn-delete{
+    width:100%;
+  }
+
+  /* BLOQUEAR SCROLL */
+  body.menu-open{
+    overflow:hidden;
+  }
+}
+
+
+
+/* overlay oscuro */
+.nav-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.6);
+  opacity:0;
+  pointer-events:none;
+  transition:0.3s;
+  z-index:999;
+}
+
+.nav-overlay.active{
+  opacity:1;
+  pointer-events:auto;
 }
 
 
