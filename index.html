@@ -34,6 +34,8 @@
 
   </div>
 </nav>
+
+ <div class="nav-overlay" id="navOverlay" onclick="cerrarMenu()"></div>
 <!-- HERO PRO MODO DIOS -->
 <section class="hero" style="
   background: linear-gradient(135deg, #000000, #1a1a1a);
@@ -1125,8 +1127,23 @@ function limpiarCliente(){
 /* ===================== MENU MOBILE ===================== */
 function toggleMenu(){
   const nav = document.getElementById("navLinks");
+  const overlay = document.getElementById("navOverlay");
+
   nav.classList.toggle("active");
-}  
+  overlay.classList.toggle("active");
+
+  document.body.classList.toggle("menu-open");
+}
+
+function cerrarMenu(){
+  const nav = document.getElementById("navLinks");
+  const overlay = document.getElementById("navOverlay");
+
+  nav.classList.remove("active");
+  overlay.classList.remove("active");
+
+  document.body.classList.remove("menu-open");
+}
 
   function cerrarMenu(){
   const nav = document.getElementById("navLinks");
