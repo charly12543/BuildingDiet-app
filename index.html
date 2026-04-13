@@ -401,32 +401,59 @@ function generarDietaPRO(datos){
   
 /* ===================== USAR PRO ===================== */
 function usarPro(){
-let clienteStorage = JSON.parse(localStorage.getItem("clienteEditar") || "{}");
 
-let datos = {
-  id: clienteStorage.id || null, // 🔥 CLAVE PRO
-  nombre: document.getElementById("nombreCliente").value,
-  peso: parseFloat(document.getElementById("peso").value),
-  altura: parseFloat(document.getElementById("altura").value),
-  edad: parseFloat(document.getElementById("edad").value),
-  sexo: document.getElementById("sexo").value,
-  objetivo: document.getElementById("objetivo").value,
-  nivel: document.getElementById("nivel").value,
-  tomaWhey: document.getElementById("tomaWhey").value==="true",
-  diasGym: parseInt(document.getElementById("diasGym").value) || 0
-};
+  let clienteStorage = JSON.parse(localStorage.getItem("clienteEditar") || "{}");
 
+  let datos = {
+    id: clienteStorage.id || null, // 🔥 CLAVE PRO
+    nombre: document.getElementById("nombreCliente").value,
+    peso: parseFloat(document.getElementById("peso").value),
+    altura: parseFloat(document.getElementById("altura").value),
+    edad: parseFloat(document.getElementById("edad").value),
+    sexo: document.getElementById("sexo").value,
+    objetivo: document.getElementById("objetivo").value,
+    nivel: document.getElementById("nivel").value,
+    tomaWhey: document.getElementById("tomaWhey").value==="true",
+    diasGym: parseInt(document.getElementById("diasGym").value) || 0
+  };
+
+  // 🔥 VALIDACIÓN
   if(!datos.peso || !datos.altura || !datos.edad){
     alert("Completa todos los datos bro 🔥");
     return;
   }
 
-  let dieta = generarDietaPRO(datos);
-mostrarDieta(dieta);
-  // 🔥 NUEVO (NO ROMPE NADA)
-  guardarPlanBackend(datos, dieta);
- }
+  // ⚡ LOADER PRO
+  document.getElementById("resultadoPRO").innerHTML = `
+    <p style="
+      text-align:center;
+      font-size:18px;
+      animation:pulse 1s infinite;
+    ">
+      ⚡ Generando plan profesional...
+    </p>
+  `;
 
+  // 🔊 SONIDO PRO
+  try{
+    new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3").play();
+  }catch(e){
+    console.log("🔇 sonido bloqueado por navegador");
+  }
+
+  // ⏳ DELAY TIPO IA PRO
+  setTimeout(() => {
+
+    let dieta = generarDietaPRO(datos);
+
+    mostrarDieta(dieta);
+
+    // 🔥 GUARDAR BACKEND (NO SE ROMPE)
+    guardarPlanBackend(datos, dieta);
+
+  }, 600);
+
+}
 /* ===================== FUNCION INTELIGENTE ===================== */  
 function generarMensajeCoach(dieta, datos){
   let objetivo = datos.objetivo;
