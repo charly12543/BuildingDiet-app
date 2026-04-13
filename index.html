@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dietas-app</title>
 <link rel="stylesheet" href="style.css">
-
 <script>
  if(!localStorage.getItem("token")){
   window.location.href = "login.html";
@@ -15,15 +14,18 @@
 <body>
 
 <!-- NAVBAR -->  
-<nav class="navbar">
+ <nav class="navbar">
   <div class="nav-container">
 
+    <!-- LOGO -->
     <a href="index.html" class="logo">
       <img src="images/logoGitHub.png" alt="logo">
     </a>
 
+    <!-- HAMBURGUESA -->
     <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 
+    <!-- LINKS -->
     <ul class="nav-links" id="navLinks">
       <li><a href="planes.html" onclick="cerrarMenu()">📋 Planes</a></li>
       <li id="usuarioNav"></li>
@@ -33,37 +35,81 @@
   </div>
 </nav>
 
-<div class="nav-overlay" id="navOverlay" onclick="cerrarMenu()"></div>
+ <div class="nav-overlay" id="navOverlay" onclick="cerrarMenu()"></div>
+<!-- HERO PRO MODO DIOS -->
+<section class="hero" style="
+  background: linear-gradient(135deg, #000000, #1a1a1a);
+  color: white;
+  text-align: center;
+  padding: 70px 20px;
+  border-bottom: 2px solid #d4af37;
+">
 
-<!-- HERO -->
-<section class="hero" style="background: linear-gradient(135deg, #000000, #1a1a1a); color: white; text-align: center; padding: 70px 20px; border-bottom: 2px solid #d4af37;">
-  <h1 style="font-size: 2.8rem; color: #d4af37;">💎 Charly Fitness PRO</h1>
-  <p>Plataforma inteligente para dietas y rutinas</p>
+  <h1 style="
+    font-size: 2.8rem;
+    color: #d4af37;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  ">
+    💎 Charly Fitness PRO
+  </h1>
+
+  <p style="
+    font-size: 1.3rem;
+    max-width: 650px;
+    margin: auto;
+    opacity: 0.95;
+    line-height: 1.6;
+  ">
+    Plataforma inteligente diseñada para generar <strong>dietas y rutinas!</strong></p>
+
+  <div style="
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    opacity: 0.85;
+  ">
+    <span>⚡ Generación instantánea</span>
+    <span>📊 Personalización avanzada</span>
+    <span>💾 Guardado automático</span>
+    <span>📄 Exportación profesional PDF</span>
+  </div>
+
+  <p style="
+    margin-top: 20px;
+    font-size: 13px;
+    opacity: 0.6;
+  ">
+    💻 Desarrollado por Charly Fitness • Fitness & Code
+  </p>
+
 </section>
 
-<!-- CALCULADORA -->
+<!-- CALCULADORA -->   
 <section>
 <div class="calculadora">
-
   <input type="text" id="nombreCliente" placeholder="Nombre del cliente">
   <input type="text" id="telefonoCliente" placeholder="Teléfono cliente (Ej: 5217771234567)">
   <input type="number" id="peso" placeholder="Peso (kg)">
-  <input type="number" step="0.01" id="altura" placeholder="Altura">
+  <input type="number" step="0.01" id="altura" placeholder="Altura (1.80 o 180)">
   <input type="number" id="edad" placeholder="Edad">
 
-  <label>Sexo</label>
+  <label>🧍 Sexo</label>
   <select id="sexo">
     <option value="hombre">Hombre</option>
     <option value="mujer">Mujer</option>
   </select>
 
-  <label>Objetivo</label>
+  <label>🎯 Objetivo</label>  
   <select id="objetivo">
     <option value="definicion">Definición</option>
     <option value="volumen">Volumen</option>
   </select>
 
-  <label>Nivel</label>
+  <label>🔥 Nivel del cliente</label>
   <select id="nivel">
     <option value="novato">Novato</option>
     <option value="intermedio">Intermedio</option>
@@ -71,26 +117,25 @@
     <option value="competidor">Competidor</option>
   </select>
 
-  <label>Días</label>
-  <input type="number" id="diasGym">
+  <label>📅 Días por semana</label>
+  <input type="number" id="diasGym" min="2" max="7" placeholder="Ej: 3">
 
-  <label>Whey</label>
+  <label>💊 Toma proteína en polvo</label>
   <select id="tomaWhey">
     <option value="true">Sí</option>
     <option value="false">No</option>
   </select>
 
-  <button onclick="usarPro()">🔥 Generar Dieta</button>
-  <button onclick="generarRutina()">🏋️ Rutina</button>
+  <button onclick="usarPro()">🔥 Generar Dieta PRO</button>
+  <button onclick="generarRutina()" style="margin-top:10px;">🏋️‍♂️ Generar Rutina PRO</button>
 
-  <button onclick="descargarPDF('dieta')">📄 PDF Dieta</button>
-  <button onclick="descargarPDF('rutina')">📄 PDF Rutina</button>
-
-  <div id="resultadoPRO"></div>
-  <div id="resultadoRutina" style="display:none;"></div>
-
+  <div id="resultadoPRO"></div> <!-- lo dejamos -->
+  <div id="resultadoRutina" style="display:none;"></div> <!-- NUEVO -->
+  <button onclick="descargarPDF('dieta')" style="margin-top:15px;">📄 Descargar PDF Dieta</button>
+  <button onclick="descargarPDF('rutina')" style="margin-top:5px;">📄 Descargar PDF Rutina</button>
 </div>
 </section>
+
 
 <!-- WHATS -->
 <div class="whats-box">
@@ -100,6 +145,9 @@
   </button>
 </div>
 
+
+ 
+<!-- ===================== SCRIPTS ===================== -->
 <script>
 /* ===================== WHATS PRO ===================== */
 function enviarWhats(){
@@ -138,19 +186,1015 @@ Te envío los PDFs en este chat 👇`;
 }
 </script>
 
+
+
 <script>
-/* ===================== MENU ===================== */
-function toggleMenu(){
-  document.getElementById("navLinks").classList.toggle("active");
+const LOCAL_API = "http://localhost:8080/api";
+const PROD_API = "https://nutrition-backend-1-f2co.onrender.com/api";
+
+let API = LOCAL_API; // valor por defecto
+
+async function initAPI(){
+  try {
+    const res = await fetch(PROD_API + "/health");
+    if(res.ok){
+      API = PROD_API;
+      console.log("🌍 Usando PROD");
+      return;
+    }
+  } catch(e){}
+
+  API = LOCAL_API;
+  console.log("💻 Usando LOCAL");
 }
-function cerrarMenu(){
-  document.getElementById("navLinks").classList.remove("active");
+
+// 🔥 ESTO ES LO IMPORTANTE
+
+(async () => {
+  await initAPI();
+})(); 
+</script>
+  
+  
+
+<script>
+/* ===================== DIETA PRO ===================== */
+function generarDietaPRO(datos){
+  let {nombre, peso, altura, edad, objetivo, sexo, nivel, tomaWhey, fase} = datos;
+
+  if(altura > 3) altura = altura / 100;
+
+  if(!fase) fase = Math.floor(Math.random()*4)+1;
+
+  // 🔥 DETECCIÓN
+  let esNino = edad < 14;
+  let esMujerVolumen = (sexo==="mujer" && objetivo==="volumen");
+
+  let imc = peso / (altura * altura);
+  let tipoFisico = "fit";
+
+  if(imc >= 35) tipoFisico = "obesidad_severa";
+  else if(imc >= 30) tipoFisico = "obesidad";
+  else if(imc >= 25) tipoFisico = "sobrepeso";
+
+  // 🔥 CALORÍAS BASE
+  let bmr = 10*peso + 6.25*(altura*100) - 5*edad + (sexo==="mujer"?-161:5);
+  let calorias = Math.round(bmr * 1.5);
+
+  // 🔥 AJUSTES POR FASE
+  if(fase===2) calorias -= 100;
+  if(fase===3) calorias -= 200;
+  if(fase===4) calorias += (objetivo==="volumen"?300:-100);
+
+  // 🔥 AJUSTE POR TIPO
+  if(tipoFisico==="obesidad_severa") calorias -= 900;
+  else if(tipoFisico==="obesidad") calorias -= 700;
+  else if(tipoFisico==="sobrepeso") calorias -= 400;
+
+  // 🍑 MODO VOLUMEN FEMENINO
+  if(esMujerVolumen){
+    calorias += 150;
+  }
+
+  // 🔥 PROTEÍNA
+  let proteFactor = 2.2;
+
+  if(sexo==="mujer") proteFactor = 1.8;
+  if(esNino) proteFactor = 1.2;
+
+  if(nivel==="competidor"){
+    proteFactor = 2.5;
+    if(fase>=3) proteFactor = 2.8;
+    if(fase===4) proteFactor = 3;
+  }
+
+  if(esMujerVolumen){
+    proteFactor = 1.7;
+  }
+
+  let proteina = Math.round(peso * proteFactor);
+  let grasa = Math.round((calorias * 0.25)/9);
+  let carbos = Math.round((calorias - (proteina*4 + grasa*9)) / 4);
+
+  let comidas = [];
+  let protePorComida = Math.round(proteina / 5);
+
+  function proteFuente(){
+  return `
+  <strong>🥩 ${protePorComida}g proteína (elige 1 opción):</strong>
+  <ul>
+    <li>${Math.round(protePorComida*4)}g pechuga de pollo</li>
+    <li>${Math.round(protePorComida*4)}g carne magra</li>
+    <li>${Math.round(protePorComida*4 + 20)}g pescado</li>
+    <li>1 lata de atún en agua</li>
+    <li>5 claras + 1 huevo</li>
+  </ul>`;
 }
+
+  function random(arr){
+    return arr[Math.floor(Math.random()*arr.length)];
+  }
+
+  // 🔥 DESAYUNO
+  function desayuno(){
+    let opciones = [
+      {
+        proteina:`${esNino?"2 huevos + 2 claras":"5 claras + 2 huevos"}`,
+        carbos:"2 rebanadas pan integral (≈60g)",
+        grasa:"10 almendras",
+        extra:"1 fruta"
+      },
+      {
+        proteina:"200g yogurt griego natural",
+        carbos:"½ taza avena (≈40g)",
+        grasa:"10 nueces",
+        extra:"frutos rojos"
+      },
+      {
+        proteina:"4 claras + 1 huevo",
+        carbos:"2 tortillas",
+        grasa:"¼ aguacate",
+        extra:"verduras"
+      }
+    ];
+
+    if(esMujerVolumen){
+      opciones.push({
+        proteina:"4 claras + 1 huevo",
+        carbos:"½ taza avena + fruta",
+        grasa:"10 almendras",
+        extra:"ideal para glúteo 🍑"
+      });
+    }
+
+    if(nivel==="competidor" && fase>=3){
+      opciones.push({
+        proteina:"6 claras + 1 huevo",
+        carbos:"1 pan integral",
+        grasa:"5 almendras",
+        extra:"espinaca + café"
+      });
+    }
+
+    return random(opciones);
+  }
+
+  // 🔥 CARBOS (ARREGLADO)
+  function carb(tipo){
+  let base = tipo==="alto"
+    ? "1 taza arroz (≈200g)"
+    : tipo==="medio"
+    ? "¾ taza arroz (≈150g)"
+    : "½ taza arroz (≈100g)";
+
+  return `
+  <strong>🍚 ${base} (elige 1 opción):</strong>
+  <ul>
+    <li>Arroz</li>
+    <li>2 tortillas</li>
+    <li>1 papa</li>
+    <li>1 taza camote</li>
+    <li>1 taza avena</li>
+    <li>1 taza puré plátano</li>
+    <li>1 taza pasta</li>
+  </ul>`;
+}
+
+  // 🔥 ENSALADA
+  function ensalada(){
+    return "2 tazas verduras: lechuga + pepino + jitomate + zanahoria + limón";
+  }
+
+  // 🔥 GRASAS
+  function grasaReal(){
+    let opciones = [
+      "10 almendras",
+      "10 nueces",
+      "¼ aguacate"
+    ];
+
+    if(esMujerVolumen){
+      opciones.push("1 cucharada crema de cacahuate");
+    }
+
+    return random(opciones);
+  }
+
+  // 🥣 DESAYUNO
+  let d = desayuno();
+  comidas.push({nombre:"Desayuno", ...d});
+
+  // 🍗 MEDIA MAÑANA
+  comidas.push({
+    nombre:"Media mañana",
+    proteina: proteFuente(),
+    carbos: carb("medio"),
+    grasa: grasaReal(),
+    extra: ensalada()
+  });
+
+  // 🍚 COMIDA
+  comidas.push({
+    nombre:"Comida",
+    proteina: proteFuente(),
+    carbos: carb("alto"),
+    grasa:"sin grasa añadida",
+    extra:"1 taza verduras cocidas (calabaza, brócoli, zanahoria)"
+  });
+
+  // 🥤 POST
+  comidas.push({
+    nombre:"Post-entreno",
+    proteina: (tomaWhey && !esNino) 
+      ? "1 scoop whey (≈25g proteína)"
+      : proteFuente(),
+    carbos:"1 fruta + arroz o 2 tortillas",
+    grasa:"0 grasa",
+    extra:"recuperación muscular"
+  });
+
+  // 🥩 CENA
+  comidas.push({
+    nombre:"Cena",
+    proteina: proteFuente(),
+    carbos: tipoFisico.includes("obesidad") ? "sin carbos" : carb("bajo"),
+    grasa:"¼ aguacate",
+    extra: ensalada()
+  });
+
+  return {
+    titulo:`🔥 Dieta PRO (${nombre}) – Fase ${fase}`,
+
+    clienteInfo:{
+      nombre,
+      edad,
+      peso,
+      altura,
+      sexo,
+      nivel,
+      objetivo,
+      fase
+    },
+
+    calorias:`${calorias} kcal`,
+    proteina:`${proteina} g`,
+    carbos:`${carbos} g`,
+    grasa:`${grasa} g`,
+    comidas,
+
+    intercambios:[
+      "🍚 Arroz ↔ 2 tortillas ↔ 1 papa",
+      "🥩 Pollo ↔ atún ↔ carne res magra",
+      "🥑 Aguacate ↔ nueces",
+      "🥣 Avena ↔ pan integral"
+    ],
+
+    tips:[
+      esMujerVolumen 
+        ? "🍑 Prioriza entrenar glúteo 2–3 veces por semana"
+        : "🔥 Fase "+fase+" activa",
+      "💧 2–3L agua",
+      "🥗 verduras libres si hay hambre",
+      "🍳 cocinar con aceite de aguacate"
+    ]
+  };
+}
+
+
+  
+/* ===================== USAR PRO ===================== */
+function usarPro(){
+
+  let clienteStorage = JSON.parse(localStorage.getItem("clienteEditar") || "{}");
+
+  let datos = {
+    id: clienteStorage.id || null, // 🔥 CLAVE PRO
+    nombre: document.getElementById("nombreCliente").value,
+    peso: parseFloat(document.getElementById("peso").value),
+    altura: parseFloat(document.getElementById("altura").value),
+    edad: parseFloat(document.getElementById("edad").value),
+    sexo: document.getElementById("sexo").value,
+    objetivo: document.getElementById("objetivo").value,
+    nivel: document.getElementById("nivel").value,
+    tomaWhey: document.getElementById("tomaWhey").value==="true",
+    diasGym: parseInt(document.getElementById("diasGym").value) || 0
+  };
+
+  // 🔥 VALIDACIÓN
+  if(!datos.peso || !datos.altura || !datos.edad){
+    alert("Completa todos los datos bro 🔥");
+    return;
+  }
+
+  // ⚡ LOADER PRO
+  document.getElementById("resultadoPRO").innerHTML = `
+    <p style="
+      text-align:center;
+      font-size:18px;
+      animation:pulse 1s infinite;
+    ">
+      ⚡ Generando plan profesional...
+    </p>
+  `;
+
+  // 🔊 SONIDO PRO
+  try{
+    new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3").play();
+  }catch(e){
+    console.log("🔇 sonido bloqueado por navegador");
+  }
+
+  // ⏳ DELAY TIPO IA PRO
+  setTimeout(() => {
+
+    let dieta = generarDietaPRO(datos);
+
+    mostrarDieta(dieta);
+
+    // 🔥 GUARDAR BACKEND (NO SE ROMPE)
+    guardarPlanBackend(datos, dieta);
+
+  }, 600);
+
+}
+/* ===================== FUNCION INTELIGENTE ===================== */  
+function generarMensajeCoach(dieta, datos){
+  let objetivo = datos.objetivo;
+  let sexo = datos.sexo;
+  let nivel = datos.nivel;
+
+  let mensaje = "";
+
+  if(objetivo === "definicion"){
+    mensaje = "Este plan está diseñado para ayudarte a reducir grasa corporal mientras mantienes la mayor cantidad de masa muscular posible.";
+  }
+
+  if(objetivo === "volumen"){
+    mensaje = "Este plan está enfocado en ayudarte a aumentar masa muscular de forma limpia, manteniendo el control del porcentaje de grasa.";
+  }
+
+  if(sexo === "mujer" && objetivo === "volumen"){
+    mensaje = "Este plan está optimizado para mejorar tu composición corporal, enfocándose en el desarrollo de glúteo y piernas sin aumentar grasa innecesaria.";
+  }
+
+  if(nivel === "competidor"){
+    mensaje += " Está ajustado con precisión para un nivel avanzado, priorizando rendimiento, estética y detalle muscular.";
+  }
+
+  return mensaje;
+}
+  /* ===================== MOSTRAR DIETA ===================== */
+function mostrarDieta(dieta){
+  let nombre = document.getElementById("nombreCliente").value;
+  let fecha = new Date().toLocaleDateString();
+  let datos = {
+  objetivo: document.getElementById("objetivo").value,
+  sexo: document.getElementById("sexo").value,
+  nivel: document.getElementById("nivel").value
+};
+
+let mensajeCoach = generarMensajeCoach(dieta, datos);
+
+  let html = `<div class="dieta-card" contenteditable="true">
+  <h2>${nombre || "Cliente"}</h2>
+  <p>${fecha}</p>
+
+  <!-- 🔥 RESUMEN PRO -->
+  <div style="
+    background:#111;
+    color:#fff;
+    padding:20px;
+    border-radius:12px;
+    margin-top:10px;
+    border:1px solid #d4af37;
+    box-shadow:0 0 10px rgba(212,175,55,0.3);
+  ">
+
+    <h3 style="color:#d4af37; margin-bottom:10px;">
+      💎 Plan nutricional diario
+    </h3>
+
+    <p style="margin-bottom:12px;">
+    ${mensajeCoach}
+    </p>
+
+    <ul style="list-style:none; padding-left:0; line-height:1.9;">
+      <li>🔥 <strong>${dieta.calorias}</strong> calorías totales</li>
+      <li>🥩 <strong>${dieta.proteina}</strong> proteína</li>
+      <li>🍚 <strong>${dieta.carbos}</strong> carbohidratos</li>
+      <li>🥑 <strong>${dieta.grasa}</strong> grasa</li>
+    </ul>
+
+    <p style="margin-top:12px; font-size:13px; opacity:0.85;">
+      ⚠️ Sigue este plan con constancia para ver resultados en pocas semanas.
+    </p>
+
+  </div>`;
+
+  // 🍽️ COMIDAS
+  dieta.comidas.forEach(c=>{
+    html += `<div class="card-meal">
+      <h4>🍽️ ${c.nombre}</h4>
+      <ul>
+        <li>🍚 ${c.carbos}</li>
+        <li>🥑 ${c.grasa}</li>
+        ${c.extra ? `<li>➕ ${c.extra}</li>` : ""}
+      </ul>
+
+      <!-- 🔥 PROTEÍNA CORRECTA -->
+      <div style="margin-top:5px;">
+        ${c.proteina}
+      </div>
+    </div>`;
+  });
+
+  // 📌 RECOMENDACIONES
+  html += `<div class="card-meal">
+    <h4>📌 Recomendaciones</h4>
+    ✔ Cocinar con aceite de aguacate o coco<br>
+    ✔ Tomar 3-4L agua diarios<br>
+    ✔ Agua de jamaica, limón o pepino con stevia<br>
+    ✔ Evitar ultraprocesados<br>
+    ✔ Caminar diario (aunque sea 20 min)<br>
+    ✔ Prioriza progresión en gym<br>
+    ✔ Duerme mínimo 7 horas<br>
+  </div>`;
+
+  // ❌ EVITAR
+  html += `<div class="card-meal">
+    <h4>🚫 Evitar</h4>
+    ✔ Refrescos<br>
+    ✔ Jugos procesados<br>
+    ✔ Comida rápida (tacos, pizzas, etc.)<br>
+    ✔ Exceso de azúcar<br>
+  </div>`;
+
+  // 🍽️ HAMBRE
+  html += `<div class="card-meal">
+    <h4>🍽️ Si tienes hambre</h4>
+    ✔ Pepino / jícama libre<br>
+    ✔ Verduras libres<br>
+    ✔ Gelatina light<br>
+  </div>`;
+
+  // 🔥 FIRMA
+  html += `<p style="text-align:center; font-weight:bold; margin-top:25px;">
+  💎 Plan personalizado por Charly Fitness
+  </p>`;
+
+  html += `</div>`;
+
+  // 🔥 SOLO AGREGAMOS ESTA LÍNEA
+  document.getElementById("resultadoRutina").style.display = "none";
+
+  document.getElementById("resultadoPRO").innerHTML = html;
+}
+
+ 
+/* ===================== DESCARGAR PDF FIX PRO ===================== */
+/* ===================== DESCARGAR PDF FIX PRO FULL ===================== */
+async function descargarPDF(tipo){
+
+  const { jsPDF } = window.jspdf;
+
+  // 🔥 DETECTAR SI ES DIETA O RUTINA
+  const elemento = tipo === "rutina"
+    ? document.getElementById("resultadoRutina")
+    : document.getElementById("resultadoPRO");
+
+  if(!elemento || !elemento.innerText.trim()){
+    alert("Primero genera algo bro 🔥");
+    return;
+  }
+
+  let nombre = document.getElementById("nombreCliente").value || "Cliente";
+
+  // 🔥 CLON LIMPIO
+  let clon = elemento.cloneNode(true);
+
+  clon.style.background = "#ffffff";
+  clon.style.color = "#000000";
+  clon.style.padding = "20px";
+  clon.style.width = "800px";
+  clon.style.boxSizing = "border-box";
+  clon.style.position = "absolute";
+  clon.style.left = "-9999px";
+
+  // 🔥 TIPOGRAFÍA PRO
+  clon.style.fontFamily = "Arial, sans-serif";
+  clon.style.lineHeight = "1.5";
+
+  // 🔥 FORZAR MODO CLARO TOTAL (FIX REAL)
+  clon.querySelectorAll("*").forEach(el => {
+    el.style.background = "#ffffff";
+    el.style.color = "#000000";
+    el.style.borderColor = "#cccccc";
+    el.style.boxShadow = "none";
+    el.style.textShadow = "none";
+  });
+
+  // 🔥 MEJORAR TARJETAS
+  clon.querySelectorAll(".card-meal").forEach(el => {
+    el.style.border = "1px solid #dddddd";
+    el.style.borderRadius = "10px";
+    el.style.padding = "10px";
+    el.style.marginBottom = "10px";
+  });
+
+  clon.querySelectorAll(".dieta-card").forEach(el => {
+    el.style.border = "1px solid #cccccc";
+    el.style.padding = "15px";
+    el.style.borderRadius = "12px";
+  });
+
+  // 🔥 QUITAR EMOJIS (evita errores PDF)
+  clon.innerHTML = clon.innerHTML.replace(/[\u{1F300}-\u{1F6FF}]/gu, "");
+
+  document.body.appendChild(clon);
+
+  const canvas = await html2canvas(clon, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff"
+  });
+
+  document.body.removeChild(clon);
+
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const pageWidth = 210;
+  const pageHeight = 297;
+
+  const margin = 10;
+  const usableWidth = pageWidth - margin * 2;
+
+  const imgWidth = usableWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  let position = 0;
+
+  // 🔥 LOGO
+  let logo = new Image();
+  logo.src = "images/logoGitHub.png";
+
+  await new Promise(resolve => logo.onload = resolve);
+
+  while(position < imgHeight){
+
+    if(position > 0){
+      pdf.addPage();
+    }
+
+    // 🔥 HEADER NEGRO PRO
+    pdf.setFillColor(0,0,0);
+    pdf.rect(0,0,pageWidth,15,"F");
+
+    // 🔥 LOGO
+    pdf.addImage(logo, "PNG", 10, 2, 25, 10);
+
+    // 🔥 TEXTO MARCA
+    pdf.setTextColor(212,175,55);
+    pdf.setFontSize(10);
+    pdf.text("Charly Fitness", pageWidth - 10, 10, null, null, "right");
+
+    // 🔥 CONTENIDO
+    pdf.addImage(
+      canvas,
+      "PNG",
+      margin,
+      20 - position,
+      imgWidth,
+      imgHeight
+    );
+
+    position += pageHeight - 20;
+  }
+
+  pdf.save(nombre + "_" + tipo + ".pdf");
+}
+  
+/* ===================== RUTINA ===================== */
+/* ===================== RUTINA MODO DIOS ===================== */
+function generarRutina(){
+
+  let nombre = document.getElementById("nombreCliente").value || "Cliente";
+  let sexo = document.getElementById("sexo").value;
+  let dias = parseInt(document.getElementById("diasGym").value) || 3;
+  let nivel = document.getElementById("nivel").value;
+  let objetivo = document.getElementById("objetivo").value;
+  let fecha = new Date().toLocaleDateString();
+
+  function getSplit(){
+    if(sexo==="mujer"){
+      if(dias<=3) return ["Glúteo","Pierna","Full"];
+      if(dias===4) return ["Glúteo","Pierna","Espalda","Glúteo + abdomen"];
+      return ["Glúteo","Pierna","Espalda","Pierna","Glúteo"];
+    } else {
+      if(dias<=3) return ["Push","Pull","Pierna"];
+      if(dias===4) return ["Pecho","Espalda","Pierna","Hombro + brazos"];
+      return ["Push","Pull","Pierna","Hombro","Pierna"];
+    }
+  }
+
+  const ejercicios = {
+
+    "Pecho":[
+      "Press banca 4x8-10",
+      "Press inclinado mancuernas 3x10",
+      "Aperturas en máquina 3x12",
+      "Fondos en paralelas 3x12",
+      "Cruces en polea 3x15"
+    ],
+
+    "Espalda":[
+      "Dominadas 4x fallo",
+      "Remo con barra 4x8",
+      "Jalón al pecho 3x12",
+      "Remo en polea 3x12",
+      "Pullover en polea 3x15"
+    ],
+
+    "Pierna":[
+      "Sentadilla libre 4x8",
+      "Prensa inclinada 4x12",
+      "Peso muerto rumano 3x10",
+      "Curl femoral 3x12",
+      "Extensión cuadriceps 3x15",
+      "Pantorrilla 5x15"
+    ],
+
+    "Hombro":[
+      "Press militar 4x8",
+      "Elevaciones laterales 4x12",
+      "Elevaciones frontales 3x12",
+      "Pájaros (posterior) 3x15",
+      "Encogimientos trapecio 3x15"
+    ],
+
+    "Bíceps":[
+      "Curl barra 4x10",
+      "Curl alterno mancuernas 3x12",
+      "Curl concentrado 3x12"
+    ],
+
+    "Tríceps":[
+      "Fondos 3x12",
+      "Extensión polea 3x12",
+      "Press francés 3x10"
+    ],
+
+    "Glúteo":[
+      "Hip thrust 4x12",
+      "Patada en polea 3x15",
+      "Puente glúteo 3x15",
+      "Abducción máquina 3x20",
+      "Sentadilla sumo 3x12"
+    ],
+
+    "Abdomen":[
+      "Crunch 3x20",
+      "Elevación piernas 3x15",
+      "Plancha 3x60s",
+      "Vacuum 3x30s"
+    ],
+
+    "Full":[
+      "Circuito full body 4 rondas",
+      "Sentadilla + press 12 reps",
+      "Burpees 10 reps",
+      "Remo mancuerna 12 reps",
+      "Abdomen 15 reps"
+    ]
+  };
+
+  const splitMap = {
+    "Push":["Pecho","Hombro","Tríceps"],
+    "Pull":["Espalda","Bíceps"],
+    "Hombro + brazos":["Hombro","Bíceps","Tríceps"],
+    "Tren superior":["Pecho","Espalda","Hombro","Bíceps","Tríceps"],
+    "Glúteo + abdomen":["Glúteo","Abdomen"]
+  };
+
+  let split = getSplit();
+
+  // 🔥 MENSAJE PRO
+  function getMensaje(){
+    let msg = "";
+
+    if(objetivo==="definicion"){
+      msg = "Rutina enfocada en pérdida de grasa manteniendo masa muscular.";
+    }
+
+    if(objetivo==="volumen"){
+      msg = "Rutina enfocada en hipertrofia y ganancia muscular.";
+    }
+
+    if(nivel==="avanzado" || nivel==="competidor"){
+      msg += " Nivel avanzado con enfoque en intensidad y progresión.";
+    }
+
+    return msg;
+  }
+
+  let html = `
+  <div class="dieta-card">
+
+    <!-- 🔥 HEADER PRO -->
+    <div style="
+      text-align:center;
+      border-bottom:2px solid #d4af37;
+      padding-bottom:15px;
+      margin-bottom:20px;
+    ">
+      <h1 style="color:#d4af37;">💎 Charly Fitness</h1>
+      <h2>${nombre}</h2>
+      <p>${fecha}</p>
+      <p style="opacity:0.8;">${getMensaje()}</p>
+    </div>
+  `;
+
+  split.forEach((dia,i)=>{
+
+    html += `<div class="card-meal">
+      <h3>🏋️ Día ${i+1} - ${dia}</h3>`;
+
+    let grupos = splitMap[dia] || [dia];
+
+    grupos.forEach(g=>{
+      let lista = ejercicios[g] || ["Ejercicio base 3x12"];
+
+      html += `<strong>${g}</strong><ul>`;
+
+      lista.forEach(e=>{
+        html += `<li>${e}</li>`;
+      });
+
+      html += `</ul>`;
+    });
+
+    html += `
+      <p>🔥 Cardio: ${objetivo==="definicion" ? "30-40 min" : "15-25 min"}</p>
+      <p>😴 Descanso: 60-90 seg</p>
+      <p>⚡ Intensidad: ${nivel==="competidor" ? "Alta" : "Media"}</p>
+    </div>`;
+  });
+
+  // 🔥 TIPS PRO
+  html += `
+    <div class="card-meal">
+      <h4>📌 Recomendaciones PRO</h4>
+      ✔ Progresión de cargas semanal<br>
+      ✔ Técnica perfecta antes de subir peso<br>
+      ✔ Hidratación constante<br>
+      ✔ Dormir mínimo 7 horas<br>
+    </div>
+
+    <p style="text-align:center; font-weight:bold; margin-top:25px;">
+      💎 Rutina personalizada por Charly Fitness
+    </p>
+
+  </div>
+  `;
+
+  // 🔥 OUTPUT
+  document.getElementById("resultadoPRO").innerHTML = "";
+  document.getElementById("resultadoRutina").style.display = "block";
+  document.getElementById("resultadoRutina").innerHTML = html;
+
+  guardarRutinaBackend();
+}
+/* ===================== guardarPlanBackend ===================== */  
+async function guardarPlanBackend(datos, dieta){
+  try {
+
+    let html = document.getElementById("resultadoPRO").innerHTML;
+
+    if(!html || html.trim() === ""){
+      alert("Primero genera la dieta bro 🔥");
+      return;
+    }
+
+    let payload = {
+      cliente: datos,
+      dieta: dieta,
+      html: html
+    };
+
+    let planId = localStorage.getItem("planEditarId");
+
+  //  let url = "http://localhost:8080/api/guardar-plan";
+  // const api = await getAPI();
+   let url = `${API}/guardar-plan`;
+   let method = "POST";
+
+    // 🔥 SI EXISTE → UPDATE
+    if(planId){
+    //  url = `http://localhost:8080/api/planes/${planId}`;
+ //    url = `${API}/rutinas/${rutinaId}`;
+ //    ${API}/planes/${planId}
+      url = `${API}/planes/${planId}`;
+      method = "PUT";
+    }
+
+    let res = await fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok){
+      console.error("❌ Error backend");
+      return;
+    }
+
+    let data = await res.json();
+
+    console.log("✅ Plan guardado/actualizado:", data);
+
+    // 🔥 LIMPIAR MODO EDICIÓN
+    localStorage.removeItem("planEditarId");
+    localStorage.removeItem("clienteEditar");
+
+    alert(planId ? "✅ Plan actualizado" : "✅ Plan guardado");
+
+  } catch(error){
+    console.error("❌ Error conexión:", error);
+  }
+}
+/* ===================== guardarRutinaBackend ===================== */  
+async function guardarRutinaBackend(){  
+  try {  
+
+    // 🔥 AHORA SÍ CORRECTO
+    let html = document.getElementById("resultadoRutina").innerHTML;
+
+    if(!html || html.trim() === ""){
+      alert("Primero genera la rutina bro 🔥");
+      return;
+    }
+
+    let cliente = {
+      nombre: document.getElementById("nombreCliente").value,
+      peso: parseFloat(document.getElementById("peso").value),
+      altura: parseFloat(document.getElementById("altura").value),
+      edad: parseInt(document.getElementById("edad").value),
+      sexo: document.getElementById("sexo").value,
+      objetivo: document.getElementById("objetivo").value,
+      nivel: document.getElementById("nivel").value,
+      diasGym: parseInt(document.getElementById("diasGym").value) || 0,
+      tomaWhey: document.getElementById("tomaWhey").value === "true"
+    };
+
+    let rutinaId = localStorage.getItem("rutinaEditarId");
+
+//    let url = "http://localhost:8080/api/guardar-rutina";
+    let url = `${API}/guardar-rutina`;
+    let method = "POST";
+
+    if(rutinaId){
+  //    url = `http://localhost:8080/api/rutinas/${rutinaId}`;
+      url = `${API}/rutinas/${rutinaId}`;
+      method = "PUT";
+    }
+
+    let payload = {
+      cliente: cliente,
+      rutinaHtml: html
+    };
+
+    let res = await fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok){
+      console.error("❌ Error rutina");
+      return;
+    }
+
+    let data = await res.json();
+
+    console.log("🏋️ Rutina guardada/actualizada:", data);
+
+    localStorage.removeItem("rutinaEditarId");
+
+    alert(rutinaId ? "✅ Rutina actualizada" : "✅ Rutina guardada");
+
+  } catch(err){  
+    console.error("❌ Error rutina:", err);  
+  }  
+}
+
+
+ 
+
+/* log - Out */  
 function logout(){
   localStorage.removeItem("token");
   window.location.href = "login.html";
-}
+}  
 </script>
 
+ <script>
+/* 🔒 VALIDAR LOGIN */
+if(!localStorage.getItem("token")){
+  window.location.replace("login.html");
+}  
+
+/* 👤 MOSTRAR USUARIO */
+document.addEventListener("DOMContentLoaded", () => {
+  let usuario = localStorage.getItem("usuario");
+
+  if(usuario){
+    document.getElementById("usuarioNav").innerHTML =
+      `👤 <span style="color:#d4af37;">${usuario}</span>`;
+  }
+});
+
+/* 👤 CARGAER DATOS AUTOMATICOS */
+document.addEventListener("DOMContentLoaded", () => {
+
+  let cliente = localStorage.getItem("clienteEditar");
+  let modoEdicion = localStorage.getItem("modoEdicion");
+
+  if(cliente){
+
+    let data = JSON.parse(cliente);
+
+    document.getElementById("nombreCliente").value = data.nombre || "";
+    document.getElementById("peso").value = data.peso || "";
+    document.getElementById("altura").value = data.altura || "";
+    document.getElementById("edad").value = data.edad || "";
+    document.getElementById("sexo").value = data.sexo || "hombre";
+    document.getElementById("objetivo").value = data.objetivo || "definicion";
+    document.getElementById("nivel").value = data.nivel || "novato";
+    document.getElementById("diasGym").value = data.diasGym || 3;
+    document.getElementById("tomaWhey").value = data.tomaWhey ? "true" : "false";
+
+    // 🔥 INDICADOR VISUAL
+    if(modoEdicion){
+      document.querySelector(".hero h1").innerText = "✏️ Editando cliente";
+    }
+
+  }
+
+});
+
+
+// 🔥 LIMPIAR CLIENTE  
+function limpiarCliente(){
+
+  localStorage.removeItem("planEditarId");
+  localStorage.removeItem("clienteEditar");
+  localStorage.removeItem("modoEdicion");
+  localStorage.removeItem("rutinaEditarId");
+
+  document.querySelectorAll("input").forEach(i => i.value = "");
+  document.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+
+  document.getElementById("resultadoPRO").innerHTML = "";
+
+  document.querySelector(".hero h1").innerText = "🔥 Calculadora PRO (Privada)";
+
+  alert("🆕 Modo nuevo cliente activado");
+}  
+
+// Menu Bar 
+/* ===================== MENU MOBILE ===================== */
+function toggleMenu(){
+  const nav = document.getElementById("navLinks");
+  const overlay = document.getElementById("navOverlay");
+
+  nav.classList.toggle("active");
+  overlay.classList.toggle("active");
+
+  document.body.classList.toggle("menu-open");
+}
+
+function cerrarMenu(){
+  const nav = document.getElementById("navLinks");
+  const overlay = document.getElementById("navOverlay");
+
+  nav.classList.remove("active");
+  overlay.classList.remove("active");
+
+  document.body.classList.remove("menu-open");
+}
+
+ function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+}
+  
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
