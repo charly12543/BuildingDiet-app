@@ -92,7 +92,7 @@
 <section>
 <div class="calculadora">
   <input type="text" id="nombreCliente" placeholder="Nombre del cliente">
-  <input type="text" id="telefonoCliente" placeholder="Teléfono cliente (Ej: 5217771234567)">
+ <input type="tel" id="telefonoCliente" placeholder="Teléfono cliente (Ej: 7771234567)">
   <input type="number" id="peso" placeholder="Peso (kg)">
   <input type="number" step="0.01" id="altura" placeholder="Altura (1.80 o 180)">
   <input type="number" id="edad" placeholder="Edad">
@@ -116,6 +116,42 @@
     <option value="avanzado">Avanzado</option>
     <option value="competidor">Competidor</option>
   </select>
+
+ <!-- 🔥 PLICOMETRÍA -->
+<label>📏 ¿Tienes pliegues (plicometría)?</label>
+<select id="tienePlicometria" onchange="togglePlico()">
+  <option value="false">No</option>
+  <option value="true">Sí</option>
+</select>
+
+<div id="plicoBox" style="display:none;">
+  <input type="number" id="triceps" placeholder="Tríceps (mm)">
+  <input type="number" id="biceps" placeholder="Bíceps (mm)">
+  <input type="number" id="subescapular" placeholder="Subescapular (mm)">
+  <input type="number" id="suprailiaco" placeholder="Suprailiaco (mm)">
+</div>
+
+<!-- 🔥 MEDIDAS COMPLETAS (LO QUE PEDISTE) -->
+<label>📐 ¿Tienes medidas corporales?</label>
+<select id="tieneMedidas" onchange="toggleMedidas()">
+  <option value="false">No</option>
+  <option value="true">Sí</option>
+</select>
+
+<div id="medidasBox" style="display:none;">
+  <input type="number" id="cintura" placeholder="Cintura (cm)">
+  <input type="number" id="pecho" placeholder="Pecho (cm)">
+  <input type="number" id="espalda" placeholder="Espalda (cm)">
+
+  <input type="number" id="brazoDerecho" placeholder="Brazo derecho (cm)">
+  <input type="number" id="brazoIzquierdo" placeholder="Brazo izquierdo (cm)">
+
+  <input type="number" id="piernaDerecha" placeholder="Pierna derecha (cm)">
+  <input type="number" id="piernaIzquierda" placeholder="Pierna izquierda (cm)">
+
+  <input type="number" id="pantorrillaDerecha" placeholder="Pantorrilla derecha (cm)">
+  <input type="number" id="pantorrillaIzquierda" placeholder="Pantorrilla izquierda (cm)">
+</div>
 
   <label>📅 Días por semana</label>
   <input type="number" id="diasGym" min="2" max="7" placeholder="Ej: 3">
@@ -410,16 +446,17 @@ function generarDietaPRO(datos){
     extra:"recuperación"
   });
 
-  comidas.push({
-    nombre:"Cena",
-    proteina: proteFuente(),
-    if(tipoFisico.includes("obesidad")){
+ if(tipoFisico.includes("obesidad")){
     carbos = Math.round(carbos * 0.8); // reducción global
     }
-   // carbos: tipoFisico.includes("obesidad") ? "sin carbos" : carb("cena"),
-    grasa:"¼ aguacate",
-    extra: ensalada()
-  });
+
+  comidas.push({
+  nombre:"Cena",
+  proteina: proteFuente(),
+  carbos: carb("cena"),
+  grasa:"¼ aguacate",
+  extra: ensalada()
+});
 
   return {
     titulo:`🔥 Dieta PRO (${nombre})`,
@@ -446,7 +483,28 @@ function usarPro(){
     objetivo: document.getElementById("objetivo").value,
     nivel: document.getElementById("nivel").value,
     tomaWhey: document.getElementById("tomaWhey").value==="true",
-    diasGym: parseInt(document.getElementById("diasGym").value) || 0
+    diasGym: parseInt(document.getElementById("diasGym").value) || 0,
+
+   tieneMedidas: document.getElementById("tieneMedidas").value === "true",
+medidas: {
+  cintura: parseFloat(document.getElementById("cintura").value) || 0,
+  pecho: parseFloat(document.getElementById("pecho").value) || 0,
+  espalda: parseFloat(document.getElementById("espalda").value) || 0,
+  brazoDerecho: parseFloat(document.getElementById("brazoDerecho").value) || 0,
+  brazoIzquierdo: parseFloat(document.getElementById("brazoIzquierdo").value) || 0,
+  piernaDerecha: parseFloat(document.getElementById("piernaDerecha").value) || 0,
+  piernaIzquierda: parseFloat(document.getElementById("piernaIzquierda").value) || 0,
+  pantorrillaDerecha: parseFloat(document.getElementById("pantorrillaDerecha").value) || 0,
+  pantorrillaIzquierda: parseFloat(document.getElementById("pantorrillaIzquierda").value) || 0
+},
+
+tienePlicometria: document.getElementById("tienePlicometria").value === "true",
+plicometria: {
+  triceps: parseFloat(document.getElementById("triceps").value) || 0,
+  biceps: parseFloat(document.getElementById("biceps").value) || 0,
+  subescapular: parseFloat(document.getElementById("subescapular").value) || 0,
+  suprailiaco: parseFloat(document.getElementById("suprailiaco").value) || 0
+}
   };
 
   // 🔥 VALIDACIÓN
@@ -1063,10 +1121,6 @@ async function guardarRutinaBackend(){
  
 
 /* log - Out */  
-function logout(){
-  localStorage.removeItem("token");
-  window.location.href = "login.html";
-}  
 </script>
 
  <script>
@@ -1155,15 +1209,18 @@ function cerrarMenu(){
   document.body.classList.remove("menu-open");
 }
 
- function logout(){
-  localStorage.removeItem("token");
-  window.location.href = "login.html";
-}
-
 function ensalada(){
   return "verduras libres (lechuga, pepino, jitomate)";
 }
+function toggleMedidas(){
+  let val = document.getElementById("tieneMedidas").value;
+  document.getElementById("medidasBox").style.display = val==="true" ? "block" : "none";
+}
 
+function togglePlico(){
+  let val = document.getElementById("tienePlicometria").value;
+  document.getElementById("plicoBox").style.display = val==="true" ? "block" : "none";
+}
 
   
 </script>
