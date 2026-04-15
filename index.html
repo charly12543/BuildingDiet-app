@@ -413,7 +413,10 @@ function generarDietaPRO(datos){
   comidas.push({
     nombre:"Cena",
     proteina: proteFuente(),
-    carbos: tipoFisico.includes("obesidad") ? "sin carbos" : carb("cena"),
+    if(tipoFisico.includes("obesidad")){
+    carbos = Math.round(carbos * 0.8); // reducción global
+    }
+   // carbos: tipoFisico.includes("obesidad") ? "sin carbos" : carb("cena"),
     grasa:"¼ aguacate",
     extra: ensalada()
   });
