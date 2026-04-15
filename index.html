@@ -267,28 +267,14 @@ function generarDietaPRO(datos){
     else if(grasaInput < 12 && objetivo==="volumen") calorias += 250;
   }
 
-  /* ===================== AJUSTE POR MEDIDAS (AHORA REAL) ===================== */
-  if(datos.tieneMedidas && datos.medidas){
-
-    let {cintura, pecho, piernaDerecha, piernaIzquierda} = datos.medidas;
-
-    // 🔻 grasa abdominal
-    if(cintura > 90) calorias -= 250;
-    if(cintura > 100) calorias -= 350;
-
-    // 🔼 buena estructura muscular
-    if(pecho > cintura + 15) calorias += 150;
-
-    // 🔻 piernas bajas
-    let piernaProm = (piernaDerecha + piernaIzquierda)/2;
-    if(piernaProm && piernaProm < 50) calorias -= 100;
-  }
-
   /* ===================== PROTEÍNA INTELIGENTE ===================== */
   let proteFactor = 2.2;
 
   if(sexo==="mujer") proteFactor = 1.8;
   if(esNino) proteFactor = 1.2;
+
+  if(objetivo === "volumen") proteFactor += 0.2;
+  if(objetivo === "definicion") proteFactor += 0.1;
 
   if(grasaInput){
     if(grasaInput > 25) proteFactor = 2.0;
@@ -305,7 +291,12 @@ function generarDietaPRO(datos){
     proteFactor = 1.7;
   }
 
-  let proteina = Math.round(peso * proteFactor);
+  let pesoBase = peso;
+  if(grasaInput){
+    pesoBase = peso * (1 - (grasaInput / 100));
+  }
+
+  let proteina = Math.round(pesoBase * proteFactor);
   let grasa = Math.round((calorias * 0.25)/9);
   let carbos = Math.round((calorias - (proteina*4 + grasa*9)) / 4);
 
@@ -329,52 +320,68 @@ function generarDietaPRO(datos){
     return arr[Math.floor(Math.random()*arr.length)];
   }
 
+  function grasaReal(){
+    return random(["10 almendras","¼ aguacate","10 nueces"]);
+  }
+
+  function ensalada(){
+    return "verduras libres (lechuga, pepino, jitomate)";
+  }
+
+  function carb(tipo){
+
+    let distribucion = {
+      desayuno: 0.25,
+      media: 0.20,
+      comida: 0.30,
+      post: 0.15,
+      cena: 0.10
+    };
+
+    let gramos = Math.round(carbos * distribucion[tipo]);
+
+    let arroz = Math.round(gramos * 2.5);
+    let tortillas = Math.max(1, Math.round(gramos / 15));
+    let papa = Math.round(gramos * 1.3);
+    let avena = Math.round(gramos * 1.2);
+    let pasta = Math.round(gramos * 2.3);
+
+    return `
+    <strong>🍚 ${gramos}g carbohidratos (elige 1 opción):</strong>
+    <ul>
+      <li>${arroz}g arroz cocido</li>
+      <li>${tortillas} tortillas</li>
+      <li>${papa}g papa</li>
+      <li>${avena}g avena</li>
+      <li>${pasta}g pasta</li>
+    </ul>`;
+  }
+
   function desayuno(){
+
+    let gramos = Math.round(carbos * 0.25);
+
+    let arroz = Math.round(gramos * 2.5);
+    let tortillas = Math.max(1, Math.round(gramos / 15));
+    let avena = Math.round(gramos * 1.2);
+
     let opciones = [
       {
         proteina:`${esNino?"2 huevos + 2 claras":"5 claras + 2 huevos"}`,
-        carbos:"2 rebanadas pan integral",
+        carbos: `${gramos}g carbos (${arroz}g arroz o ${tortillas} tortillas o ${avena}g avena)`,
         grasa:"10 almendras",
         extra:"1 fruta"
       },
       {
         proteina:"200g yogurt griego",
-        carbos:"½ taza avena",
+        carbos: `${gramos}g carbos (${avena}g avena)`,
         grasa:"10 nueces",
         extra:"frutos rojos"
       }
     ];
+
     return random(opciones);
   }
-
-function carb(tipo){
-
-  // 🔥 DISTRIBUCIÓN REAL DE CARBOS
-  let carbPorComida = {
-    alto: 0.30,   // comida fuerte (post o comida principal)
-    medio: 0.22,  // media mañana
-    bajo: 0.12    // cena
-  };
-
-  let gramos = Math.round(carbos * carbPorComida[tipo]);
-
-  // 🔥 CONVERSIÓN A ALIMENTOS
-  let arroz = Math.round(gramos * 2.5); // 1g carb ≈ 2.5g arroz cocido
-  let tortillas = Math.round(gramos / 15); // 1 tortilla ≈ 15g carb
-  let papa = Math.round(gramos * 1.3);
-  let avena = Math.round(gramos * 1.2);
-  let pasta = Math.round(gramos * 2.3);
-
-  return `
-  <strong>🍚 ${gramos}g carbohidratos (elige 1 opción):</strong>
-  <ul>
-    <li>${arroz}g arroz cocido</li>
-    <li>${tortillas} tortillas</li>
-    <li>${papa}g papa</li>
-    <li>${avena}g avena</li>
-    <li>${pasta}g pasta</li>
-  </ul>`;
-}
 
   let d = desayuno();
   comidas.push({nombre:"Desayuno", ...d});
@@ -382,7 +389,7 @@ function carb(tipo){
   comidas.push({
     nombre:"Media mañana",
     proteina: proteFuente(),
-    carbos: carb("medio"),
+    carbos: carb("media"),
     grasa: grasaReal(),
     extra: ensalada()
   });
@@ -390,17 +397,15 @@ function carb(tipo){
   comidas.push({
     nombre:"Comida",
     proteina: proteFuente(),
-    carbos: carb("alto"),
+    carbos: carb("comida"),
     grasa:"sin grasa",
     extra:"verduras"
   });
 
   comidas.push({
     nombre:"Post-entreno",
-    proteina: (tomaWhey && !esNino) 
-      ? "1 scoop whey"
-      : proteFuente(),
-    carbos:"fruta + arroz",
+    proteina: (tomaWhey && !esNino) ? "1 scoop whey" : proteFuente(),
+    carbos: carb("post"),
     grasa:"0",
     extra:"recuperación"
   });
@@ -408,7 +413,7 @@ function carb(tipo){
   comidas.push({
     nombre:"Cena",
     proteina: proteFuente(),
-    carbos: tipoFisico.includes("obesidad") ? "sin carbos" : carb("bajo"),
+    carbos: tipoFisico.includes("obesidad") ? "sin carbos" : carb("cena"),
     grasa:"¼ aguacate",
     extra: ensalada()
   });
@@ -422,8 +427,6 @@ function carb(tipo){
     comidas
   };
 }
-
-
   
 /* ===================== USAR PRO ===================== */
 function usarPro(){
@@ -1153,6 +1156,12 @@ function cerrarMenu(){
   localStorage.removeItem("token");
   window.location.href = "login.html";
 }
+
+function ensalada(){
+  return "verduras libres (lechuga, pepino, jitomate)";
+}
+
+
   
 </script>
 
