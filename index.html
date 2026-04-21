@@ -374,7 +374,12 @@ if(datos.tienePlicometria){
   let proteina = Math.round(pesoBase * proteFactor);
 
   /* ===================== GRASAS ===================== */
-  let grasa = Math.round((calorias * 0.25)/9);
+  let grasaFactor = 0.25;
+
+  if(objetivo === "definicion") grasaFactor = 0.20;
+  if(objetivo === "volumen") grasaFactor = 0.30;
+
+  let grasa = Math.round((calorias * grasaFactor)/9); 
 
   /* ===================== CARBOS ===================== */
   let carbos = Math.round((calorias - (proteina*4 + grasa*9)) / 4);
@@ -535,8 +540,12 @@ plicometria: {
 btn.disabled = true;
 btn.innerText = "⏳ Generando...";
 
+ // 🔥 BLOQUEAR TODO
+document.querySelectorAll("button").forEach(b => b.disabled = true);
+
   // 🔥 VALIDACIÓN
-  if(isNaN(datos.peso) || isNaN(datos.altura) || isNaN(datos.edad)){ 
+ 
+   if(!datos.nombre || isNaN(datos.peso) || isNaN(datos.altura) || isNaN(datos.edad) || datos.diasGym <= 0){
     alert("Completa todos los datos bro 🔥");
     btn.disabled = false;
     btn.innerText = "🔥 Generar Dieta PRO";
@@ -590,6 +599,9 @@ btn.innerText = "⏳ Generando...";
   // 🔥 REACTIVAR BOTÓN
   btn.disabled = false;
   btn.innerText = "🔥 Generar Dieta PRO";
+
+   // 🔥 DESBLOQUEAR TODO
+document.querySelectorAll("button").forEach(b => b.disabled = false);
 
 }, 600);
 
