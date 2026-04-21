@@ -222,29 +222,10 @@ Te envío los PDFs en este chat 👇`;
 <script>
 const LOCAL_API = "http://localhost:8080/api";
 const PROD_API = "https://nutrition-backend-1-f2co.onrender.com/api";
-
-//let API = LOCAL_API; // valor por defecto
- let API = null;
-let apiReady = false;
-
-async function initAPI(){
-  try {
-    const res = await fetch(PROD_API + "/health");
-    if(res.ok){
-      API = PROD_API;
-      console.log("🌍 Usando PROD");
-      return;
-    }
-  } catch(e){}
-
-  API = LOCAL_API;
-  console.log("💻 Usando LOCAL");
-}
-
+ 
 // 🔥 ESTO ES LO IMPORTANTE
-
 let apiReady = false;
-
+ let API = "";
 async function initAPI(){
   try {
     const res = await fetch(PROD_API + "/health");
@@ -302,7 +283,8 @@ function generarDietaPRO(datos){
 
   let {nombre, peso, altura, edad, objetivo, sexo, nivel, tomaWhey, fase, diasGym} = datos;
 
-  if(altura > 3) altura = altura / 100;
+ // if(altura > 3) altura = altura / 100;
+ if(altura > 10) altura = altura / 100;
   if(!fase) fase = Math.floor(Math.random()*4)+1;
 
   let esNino = edad < 14;
@@ -554,13 +536,24 @@ btn.disabled = true;
 btn.innerText = "⏳ Generando...";
 
   // 🔥 VALIDACIÓN
-  if(!datos.peso || !datos.altura || !datos.edad){
+  if(isNaN(datos.peso) || isNaN(datos.altura) || isNaN(datos.edad)){ 
     alert("Completa todos los datos bro 🔥");
+    btn.disabled = false;
+    btn.innerText = "🔥 Generar Dieta PRO";
     return;
   }
 
- if(!API){
+ if(datos.peso <= 0 || datos.altura <= 0 || datos.edad <= 0){
+  alert("⚠️ Datos inválidos bro");
+  btn.disabled = false;
+  btn.innerText = "🔥 Generar Dieta PRO";
+  return;
+}
+
+ if(!apiReady){
   alert("⏳ Espera un momento bro, cargando servidor...");
+  btn.disabled = false;
+  btn.innerText = "🔥 Generar Dieta PRO";
   return;
 }
 
@@ -588,6 +581,9 @@ btn.innerText = "⏳ Generando...";
   let dieta = generarDietaPRO(datos);
 
   mostrarDieta(dieta);
+   document.getElementById("resultadoPRO").scrollIntoView({
+  behavior: "smooth"
+});
 
   guardarPlanBackend(datos, dieta);
 
@@ -1279,7 +1275,10 @@ function togglePlico(){
   let val = document.getElementById("tienePlicometria").value;
   document.getElementById("plicoBox").style.display = val==="true" ? "block" : "none";
 }
-
+// 🚀 INICIALIZAR API AL CARGAR
+window.addEventListener("DOMContentLoaded", async () => {
+  await initAPI();
+});
   
 </script>
 
