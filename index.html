@@ -4,12 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dietas-app</title>
-<link rel="stylesheet" href="style.css">
-<script>
- if(!localStorage.getItem("token")){
-  window.location.href = "login.html";
-}
-</script>  
+<link rel="stylesheet" href="style.css"> 
 </head>
 <body>
 
@@ -162,7 +157,7 @@
     <option value="false">No</option>
   </select>
 
-  <button onclick="usarPro()">🔥 Generar Dieta PRO</button>
+  <button id="btnDieta" onclick="usarPro()">🔥 Generar Dieta PRO</button>
   <button onclick="generarRutina()" style="margin-top:10px;">🏋️‍♂️ Generar Rutina PRO</button>
 
   <div id="resultadoPRO"></div> <!-- lo dejamos -->
@@ -228,7 +223,9 @@ Te envío los PDFs en este chat 👇`;
 const LOCAL_API = "http://localhost:8080/api";
 const PROD_API = "https://nutrition-backend-1-f2co.onrender.com/api";
 
-let API = LOCAL_API; // valor por defecto
+//let API = LOCAL_API; // valor por defecto
+ let API = null;
+let apiReady = false;
 
 async function initAPI(){
   try {
@@ -246,9 +243,23 @@ async function initAPI(){
 
 // 🔥 ESTO ES LO IMPORTANTE
 
-(async () => {
-  await initAPI();
-})(); 
+let apiReady = false;
+
+async function initAPI(){
+  try {
+    const res = await fetch(PROD_API + "/health");
+    if(res.ok){
+      API = PROD_API;
+      console.log("🌍 Usando PROD");
+      apiReady = true;
+      return;
+    }
+  } catch(e){}
+
+  API = LOCAL_API;
+  console.log("💻 Usando LOCAL");
+  apiReady = true;
+}
 </script>
 
 <script>
@@ -317,7 +328,7 @@ if(datos.tienePlicometria){
   );
 }
 
-  if(grasaInput){
+  if(grasaInput !== null){
     if(grasaInput > 30) tipoFisico = "obesidad_severa";
     else if(grasaInput > 25) tipoFisico = "obesidad";
     else if(grasaInput > 18) tipoFisico = "sobrepeso";
@@ -538,11 +549,20 @@ plicometria: {
 }
   };
 
+ let btn = document.getElementById("btnDieta");
+btn.disabled = true;
+btn.innerText = "⏳ Generando...";
+
   // 🔥 VALIDACIÓN
   if(!datos.peso || !datos.altura || !datos.edad){
     alert("Completa todos los datos bro 🔥");
     return;
   }
+
+ if(!API){
+  alert("⏳ Espera un momento bro, cargando servidor...");
+  return;
+}
 
   // ⚡ LOADER PRO
   document.getElementById("resultadoPRO").innerHTML = `
@@ -565,14 +585,17 @@ plicometria: {
   // ⏳ DELAY TIPO IA PRO
   setTimeout(() => {
 
-    let dieta = generarDietaPRO(datos);
+  let dieta = generarDietaPRO(datos);
 
-    mostrarDieta(dieta);
+  mostrarDieta(dieta);
 
-    // 🔥 GUARDAR BACKEND (NO SE ROMPE)
-    guardarPlanBackend(datos, dieta);
+  guardarPlanBackend(datos, dieta);
 
-  }, 600);
+  // 🔥 REACTIVAR BOTÓN
+  btn.disabled = false;
+  btn.innerText = "🔥 Generar Dieta PRO";
+
+}, 600);
 
 }
 /* ===================== FUNCION INTELIGENTE ===================== */  
