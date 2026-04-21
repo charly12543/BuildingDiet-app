@@ -250,14 +250,46 @@ async function initAPI(){
   await initAPI();
 })(); 
 </script>
-  
-  
 
 <script>
+function calcularGrasaCorporal(plico, edad, sexo){
+
+  let suma = 
+    (plico.triceps || 0) +
+    (plico.biceps || 0) +
+    (plico.subescapular || 0) +
+    (plico.suprailiaco || 0);
+
+  if(suma === 0) return null;
+
+  let D;
+
+  if(sexo === "hombre"){
+    D = 1.112 
+      - (0.00043499 * suma) 
+      + (0.00000055 * Math.pow(suma,2)) 
+      - (0.00028826 * edad);
+  } else {
+    D = 1.097 
+      - (0.00046971 * suma) 
+      + (0.00000056 * Math.pow(suma,2)) 
+      - (0.00012828 * edad);
+  }
+
+  let grasa = (495 / D) - 450;
+
+  return Math.round(grasa);
+}
+
+
+
+
+
+ 
 /* ===================== DIETA PRO ===================== */
 function generarDietaPRO(datos){
 
-  let {nombre, peso, altura, edad, objetivo, sexo, nivel, tomaWhey, fase} = datos;
+  let {nombre, peso, altura, edad, objetivo, sexo, nivel, tomaWhey, fase, diasGym} = datos;
 
   if(altura > 3) altura = altura / 100;
   if(!fase) fase = Math.floor(Math.random()*4)+1;
@@ -274,7 +306,16 @@ function generarDietaPRO(datos){
   else if(imc >= 25) tipoFisico = "sobrepeso";
 
   /* ===================== % GRASA MANDA ===================== */
-  let grasaInput = datos.tieneGrasa ? datos.grasaCorporal : null;
+ // let grasaInput = datos.tieneGrasa ? datos.grasaCorporal : null;
+ let grasaInput = null;
+
+if(datos.tienePlicometria){
+  grasaInput = calcularGrasaCorporal(
+    datos.plicometria,
+    edad,
+    sexo
+  );
+}
 
   if(grasaInput){
     if(grasaInput > 30) tipoFisico = "obesidad_severa";
@@ -283,27 +324,38 @@ function generarDietaPRO(datos){
     else tipoFisico = "fit";
   }
 
-  /* ===================== CALORÍAS BASE ===================== */
+  /* ===================== CALORÍAS ===================== */
   let bmr = 10*peso + 6.25*(altura*100) - 5*edad + (sexo==="mujer"?-161:5);
-  let calorias = Math.round(bmr * 1.5);
 
-  /* ===================== AJUSTES FASE ===================== */
+  let actividad = 1.5;
+  if(diasGym >= 5) actividad = 1.7;
+  else if(diasGym >= 3) actividad = 1.6;
+
+  let calorias = Math.round(bmr * actividad);
+
+  /* ===================== AJUSTES ===================== */
+
+  // objetivo
+  if(objetivo === "volumen") calorias += 300;
+  if(objetivo === "definicion") calorias -= 300;
+
+  // fase
   if(fase===2) calorias -= 100;
   if(fase===3) calorias -= 200;
-  if(fase===4) calorias += (objetivo==="volumen"?300:-100);
+  if(fase===4 && objetivo==="volumen") calorias += 200;
 
-  /* ===================== AJUSTE TIPO ===================== */
-  if(tipoFisico==="obesidad_severa") calorias -= 900;
-  else if(tipoFisico==="obesidad") calorias -= 700;
-  else if(tipoFisico==="sobrepeso") calorias -= 400;
+  // tipo físico
+  if(tipoFisico==="obesidad_severa") calorias -= 700;
+  else if(tipoFisico==="obesidad") calorias -= 500;
+  else if(tipoFisico==="sobrepeso") calorias -= 250;
 
-  /* ===================== AJUSTE FINO POR % GRASA ===================== */
+  // ajuste fino por % grasa
   if(grasaInput){
-    if(grasaInput > 28) calorias -= 300;
-    else if(grasaInput < 12 && objetivo==="volumen") calorias += 250;
+    if(grasaInput > 28) calorias -= 200;
+    if(grasaInput < 12 && objetivo==="volumen") calorias += 200;
   }
 
-  /* ===================== PROTEÍNA INTELIGENTE ===================== */
+  /* ===================== PROTEÍNA ===================== */
   let proteFactor = 2.2;
 
   if(sexo==="mujer") proteFactor = 1.8;
@@ -312,15 +364,9 @@ function generarDietaPRO(datos){
   if(objetivo === "volumen") proteFactor += 0.2;
   if(objetivo === "definicion") proteFactor += 0.1;
 
-  if(grasaInput){
-    if(grasaInput > 25) proteFactor = 2.0;
-    if(grasaInput < 12) proteFactor = 2.4;
-  }
-
   if(nivel==="competidor"){
-    proteFactor = 2.5;
+    proteFactor = 2.6;
     if(fase>=3) proteFactor = 2.8;
-    if(fase===4) proteFactor = 3;
   }
 
   if(esMujerVolumen){
@@ -329,12 +375,52 @@ function generarDietaPRO(datos){
 
   let pesoBase = peso;
   if(grasaInput){
-    pesoBase = peso * (1 - (grasaInput / 100));
+    pesoBase = peso * (1 - grasaInput/100);
   }
 
   let proteina = Math.round(pesoBase * proteFactor);
+
+  /* ===================== GRASAS ===================== */
   let grasa = Math.round((calorias * 0.25)/9);
+
+  /* ===================== CARBOS ===================== */
   let carbos = Math.round((calorias - (proteina*4 + grasa*9)) / 4);
+
+  // ajuste por objetivo (🔥 IMPORTANTE)
+  if(objetivo === "volumen") carbos = Math.round(carbos * 1.1);
+  if(objetivo === "definicion") carbos = Math.round(carbos * 0.85);
+
+  // ajuste obesidad (ANTES de distribuir)
+  if(tipoFisico.includes("obesidad")){
+    carbos = Math.round(carbos * 0.8);
+  }
+
+  /* ===================== DISTRIBUCIÓN ===================== */
+  let distribucion = {
+    desayuno: 0.25,
+    media: 0.20,
+    comida: 0.30,
+    post: 0.15,
+    cena: 0.10
+  };
+
+  function carb(tipo){
+    let gramos = Math.round(carbos * distribucion[tipo]);
+
+    let arroz = Math.round(gramos * 2.5);
+    let tortillas = Math.max(1, Math.round(gramos / 15));
+    let papa = Math.round(gramos * 1.3);
+    let avena = Math.round(gramos * 1.2);
+
+    return `
+    <strong>${gramos}g carbos (elige 1):</strong>
+    <ul>
+      <li>${arroz}g arroz</li>
+      <li>${tortillas} tortillas</li>
+      <li>${papa}g papa</li>
+      <li>${avena}g avena</li>
+    </ul>`;
+  }
 
   /* ===================== COMIDAS ===================== */
   let comidas = [];
@@ -342,7 +428,7 @@ function generarDietaPRO(datos){
 
   function proteFuente(){
     return `
-    <strong>🥩 ${protePorComida}g proteína (elige 1 opción):</strong>
+    <strong>${protePorComida}g proteína:</strong>
     <ul>
       <li>${Math.round(protePorComida*4)}g pollo</li>
       <li>${Math.round(protePorComida*4)}g carne</li>
@@ -352,76 +438,21 @@ function generarDietaPRO(datos){
     </ul>`;
   }
 
-  function random(arr){
-    return arr[Math.floor(Math.random()*arr.length)];
-  }
-
   function grasaReal(){
-    return random(["10 almendras","¼ aguacate","10 nueces"]);
+    return ["10 almendras","¼ aguacate","10 nueces"][Math.floor(Math.random()*3)];
   }
 
-  function ensalada(){
-    return "verduras libres (lechuga, pepino, jitomate)";
-  }
 
-  function carb(tipo){
+  /* DESAYUNO */
+  comidas.push({
+    nombre:"Desayuno",
+    proteina:"5 claras + 2 huevos",
+    carbos: carb("desayuno"),
+    grasa:"10 almendras",
+    extra:"1 fruta"
+  });
 
-    let distribucion = {
-      desayuno: 0.25,
-      media: 0.20,
-      comida: 0.30,
-      post: 0.15,
-      cena: 0.10
-    };
-
-    let gramos = Math.round(carbos * distribucion[tipo]);
-
-    let arroz = Math.round(gramos * 2.5);
-    let tortillas = Math.max(1, Math.round(gramos / 15));
-    let papa = Math.round(gramos * 1.3);
-    let avena = Math.round(gramos * 1.2);
-    let pasta = Math.round(gramos * 2.3);
-
-    return `
-    <strong>🍚 ${gramos}g carbohidratos (elige 1 opción):</strong>
-    <ul>
-      <li>${arroz}g arroz cocido</li>
-      <li>${tortillas} tortillas</li>
-      <li>${papa}g papa</li>
-      <li>${avena}g avena</li>
-      <li>${pasta}g pasta</li>
-    </ul>`;
-  }
-
-  function desayuno(){
-
-    let gramos = Math.round(carbos * 0.25);
-
-    let arroz = Math.round(gramos * 2.5);
-    let tortillas = Math.max(1, Math.round(gramos / 15));
-    let avena = Math.round(gramos * 1.2);
-
-    let opciones = [
-      {
-        proteina:`${esNino?"2 huevos + 2 claras":"5 claras + 2 huevos"}`,
-        carbos: `${gramos}g carbos (${arroz}g arroz o ${tortillas} tortillas o ${avena}g avena)`,
-        grasa:"10 almendras",
-        extra:"1 fruta"
-      },
-      {
-        proteina:"200g yogurt griego",
-        carbos: `${gramos}g carbos (${avena}g avena)`,
-        grasa:"10 nueces",
-        extra:"frutos rojos"
-      }
-    ];
-
-    return random(opciones);
-  }
-
-  let d = desayuno();
-  comidas.push({nombre:"Desayuno", ...d});
-
+  /* MEDIA */
   comidas.push({
     nombre:"Media mañana",
     proteina: proteFuente(),
@@ -430,6 +461,7 @@ function generarDietaPRO(datos){
     extra: ensalada()
   });
 
+  /* COMIDA */
   comidas.push({
     nombre:"Comida",
     proteina: proteFuente(),
@@ -438,6 +470,7 @@ function generarDietaPRO(datos){
     extra:"verduras"
   });
 
+  /* POST */
   comidas.push({
     nombre:"Post-entreno",
     proteina: (tomaWhey && !esNino) ? "1 scoop whey" : proteFuente(),
@@ -446,26 +479,24 @@ function generarDietaPRO(datos){
     extra:"recuperación"
   });
 
- if(tipoFisico.includes("obesidad")){
-    carbos = Math.round(carbos * 0.8); // reducción global
-    }
-
+  /* CENA */
   comidas.push({
-  nombre:"Cena",
-  proteina: proteFuente(),
-  carbos: carb("cena"),
-  grasa:"¼ aguacate",
-  extra: ensalada()
-});
+    nombre:"Cena",
+    proteina: proteFuente(),
+    carbos: carb("cena"),
+    grasa:"¼ aguacate",
+    extra: ensalada()
+  });
 
   return {
-    titulo:`🔥 Dieta PRO (${nombre})`,
-    calorias:`${calorias} kcal`,
-    proteina:`${proteina} g`,
-    carbos:`${carbos} g`,
-    grasa:`${grasa} g`,
-    comidas
-  };
+  titulo:`🔥 Dieta PRO (${nombre})`,
+  calorias:`${calorias} kcal`,
+  proteina:`${proteina} g`,
+  carbos:`${carbos} g`,
+  grasa:`${grasa} g`,
+  grasaCorporal: grasaInput, // 🔥 AQUÍ
+  comidas
+};
 }
   
 /* ===================== USAR PRO ===================== */
@@ -606,11 +637,15 @@ let mensajeCoach = generarMensajeCoach(dieta, datos);
     </p>
 
     <ul style="list-style:none; padding-left:0; line-height:1.9;">
-      <li>🔥 <strong>${dieta.calorias}</strong> calorías totales</li>
-      <li>🥩 <strong>${dieta.proteina}</strong> proteína</li>
-      <li>🍚 <strong>${dieta.carbos}</strong> carbohidratos</li>
-      <li>🥑 <strong>${dieta.grasa}</strong> grasa</li>
-    </ul>
+  <li>🔥 <strong>${dieta.calorias}</strong> calorías totales</li>
+  <li>🥩 <strong>${dieta.proteina}</strong> proteína</li>
+  <li>🍚 <strong>${dieta.carbos}</strong> carbohidratos</li>
+  <li>🥑 <strong>${dieta.grasa}</strong> grasa</li>
+
+  ${dieta.grasaCorporal ? `
+    <li>📉 <strong>${dieta.grasaCorporal}%</strong> grasa corporal</li>
+  ` : ""}
+</ul>
 
     <p style="margin-top:12px; font-size:13px; opacity:0.85;">
       ⚠️ Sigue este plan con constancia para ver resultados en pocas semanas.
