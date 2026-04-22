@@ -1291,6 +1291,14 @@ function togglePlico(){
 window.addEventListener("DOMContentLoaded", async () => {
   await initAPI();
 });
+
+function logout(){
+  if(confirm("¿Cerrar sesión?")){
+    localStorage.clear();
+    window.location.replace("login.html");
+  }
+}  
+  
   
 </script>
 
