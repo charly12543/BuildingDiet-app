@@ -1069,7 +1069,7 @@ async function guardarPlanBackend(datos, dieta){
 
     let payload = {
       cliente: datos,
-      dieta: dieta,
+      dieta: JSON.stringify(dieta),
       html: html
     };
 
