@@ -1068,9 +1068,9 @@ async function guardarPlanBackend(datos, dieta){
     }
 
     let payload = {
-      cliente: datos,
-      dieta: JSON.stringify(dieta),
-      html: html
+    cliente: datos,
+    dieta: dieta, // 🔥 OBJETO DIRECTO (CLAVE)
+    html: html
     };
 
     let planId = localStorage.getItem("planEditarId");
