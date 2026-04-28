@@ -139,6 +139,7 @@ async function login(){
 
     // 🔥 Guardar token
     localStorage.setItem("token", data.token);
+    localStorage.setItem("usuario", data.usuario); // 🔥 ESTA LÍNEA ES LA CLAVE
 
     // 🔥 Redirigir
     window.location.href = "index.html";
