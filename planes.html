@@ -89,7 +89,7 @@ function getAuthHeaders() {
 const LOCAL_API = "http://localhost:8080/api";
 const PROD_API = "https://nutrition-backend-1-f2co.onrender.com/api";
 
-let API = LOCAL_API;
+let API = PROD_API;
 
 async function initAPI(){
   try {
@@ -239,8 +239,8 @@ async function verPlan(id){
   const res = await fetch(`${API}/planes/${id}`, {
     headers: getAuthHeaders()
   });
-
   const data = await res.json();
+
   document.getElementById("visor").innerHTML = data.html || "<p>❌ No hay dieta</p>";
 }
 
@@ -248,9 +248,9 @@ async function verRutina(id){
   const res = await fetch(`${API}/rutinas/${id}`, {
     headers: getAuthHeaders()
   });
-
   const data = await res.json();
-  document.getElementById("visor").innerHTML = data.rutinaHtml || "<p>❌ Sin rutina</p>";
+
+  document.getElementById("visor").innerHTML = data.rutinaHtml || "<p>❌ No hay rutina</p>";
 }
 
 /* DELETE */
