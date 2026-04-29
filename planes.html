@@ -10,6 +10,25 @@ if(!localStorage.getItem("token")){
   window.location.href = "login.html";
 }
 
+async function fetchAuth(url, options = {}){
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      ...getAuthHeaders(),
+      ...(options.headers || {})
+    }
+  });
+
+  if(res.status === 401){
+    localStorage.clear();
+    alert("Sesión expirada 🔐");
+    window.location.href = "login.html";
+    return null;
+  }
+
+  return res;
+}  
+
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
 
@@ -147,9 +166,8 @@ function mostrarRutinas(){
 /* PLANES */
 async function cargarPlanes(page = 0){
   try{
-    const res = await fetch(`${API}/planes?page=${page}&size=5`, {
-      headers: getAuthHeaders()
-    });
+    const res = await fetchAuth(`${API}/planes?page=${page}&size=5`);
+  if(!res) return;
 
     if(!res.ok){
       const text = await res.text();
@@ -193,9 +211,10 @@ async function cargarPlanes(page = 0){
 /* RUTINAS */
 async function cargarRutinas(page = 0){
   try{
-    const res = await fetch(`${API}/rutinas?page=${page}&size=5`, {
-      headers: getAuthHeaders()
-    });
+   
+
+    const res = await fetchAuth(`${API}/rutinas?page=${page}&size=5`);
+   if(!res) return;
 
     if(!res.ok){
       const text = await res.text();
@@ -236,18 +255,21 @@ async function cargarRutinas(page = 0){
 
 /* VER */
 async function verPlan(id){
-  const res = await fetch(`${API}/planes/${id}`, {
-    headers: getAuthHeaders()
-  });
+  
+const res = await fetchAuth(`${API}/planes?page=${page}&size=5`);
+if(!res) return;
+  
   const data = await res.json();
 
   document.getElementById("visor").innerHTML = data.html || "<p>❌ No hay dieta</p>";
 }
 
 async function verRutina(id){
-  const res = await fetch(`${API}/rutinas/${id}`, {
-    headers: getAuthHeaders()
-  });
+
+
+const res = await fetchAuth(`${API}/rutinas?page=${page}&size=5`);
+if(!res) return;
+  
   const data = await res.json();
 
   document.getElementById("visor").innerHTML = data.rutinaHtml || "<p>❌ No hay rutina</p>";
