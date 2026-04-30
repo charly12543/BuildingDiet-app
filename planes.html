@@ -6,10 +6,12 @@
 <link rel="stylesheet" href="style.css">
 
 <script>
+// 🔐 REDIRECCIÓN SI NO HAY TOKEN
 if(!localStorage.getItem("token")){
   window.location.href = "login.html";
 }
 
+// 🔥 FETCH CENTRALIZADO (PRO)
 async function fetchAuth(url, options = {}){
   const res = await fetch(url, {
     ...options,
@@ -27,8 +29,9 @@ async function fetchAuth(url, options = {}){
   }
 
   return res;
-}  
+}
 
+// 🔥 HEADERS JWT
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
 
@@ -89,10 +92,6 @@ function getAuthHeaders() {
 <h2>👁️ Visor</h2>
 <div id="visor" class="visor-box"></div>
 
-<button onclick="exportarPDF()" class="btn-ver">
-📄 Exportar PDF
-</button>
-
 </section>
 
 <div class="paginacion">
@@ -101,15 +100,13 @@ function getAuthHeaders() {
   <button onclick="paginaSiguiente()">➡</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script>
 const LOCAL_API = "http://localhost:8080/api";
 const PROD_API = "https://nutrition-backend-1-f2co.onrender.com/api";
 
 let API = PROD_API;
 
+// 🔥 AUTO SWITCH LOCAL / PROD
 async function initAPI(){
   try {
     const res = await fetch(PROD_API + "/health");
@@ -123,14 +120,12 @@ async function initAPI(){
   API = LOCAL_API;
   console.log("💻 Usando LOCAL");
 }
-</script>
 
-<script>
 let paginaActual = 0;
 let totalPaginas = 0;
 let vistaActual = "dietas";
 
-/* TABS */
+/* ===================== TABS ===================== */
 function activarTab(activo){
   document.getElementById("btnDietas").classList.remove("active");
   document.getElementById("btnRutinas").classList.remove("active");
@@ -163,19 +158,11 @@ function mostrarRutinas(){
   cargarRutinas();
 }
 
-/* PLANES */
+/* ===================== PLANES ===================== */
 async function cargarPlanes(page = 0){
   try{
     const res = await fetchAuth(`${API}/planes?page=${page}&size=5`);
-  if(!res) return;
-
-    if(!res.ok){
-      const text = await res.text();
-      console.error("❌ ERROR BACK:", text);
-      document.getElementById("contenedor-planes").innerHTML =
-        "<p>❌ Error cargando planes</p>";
-      return;
-    }
+    if(!res) return;
 
     const data = await res.json();
     totalPaginas = data.totalPages || 0;
@@ -184,7 +171,7 @@ async function cargarPlanes(page = 0){
     contenedor.innerHTML = "";
 
     if(!data.content || data.content.length === 0){
-      contenedor.innerHTML = "<p>⚠ No hay planes registrados</p>";
+      contenedor.innerHTML = "<p>⚠ No hay planes</p>";
       return;
     }
 
@@ -193,9 +180,9 @@ async function cargarPlanes(page = 0){
       <div class="dieta-card">
         <h3>${plan.cliente?.nombre || "Sin nombre"}</h3>
         <p>${plan.fecha || ""}</p>
+
         <div class="acciones">
           <button class="btn-ver" onclick="verPlan(${plan.id})">👁 Ver</button>
-          <button class="btn-ver" onclick="editarPlan(${plan.id})">✏️ Editar</button>
           <button class="btn-delete" onclick="eliminarPlan(${plan.id})">🗑</button>
         </div>
       </div>`;
@@ -208,19 +195,11 @@ async function cargarPlanes(page = 0){
   }
 }
 
-/* RUTINAS */
+/* ===================== RUTINAS ===================== */
 async function cargarRutinas(page = 0){
   try{
-   
-
     const res = await fetchAuth(`${API}/rutinas?page=${page}&size=5`);
-   if(!res) return;
-
-    if(!res.ok){
-      const text = await res.text();
-      console.error(text);
-      return;
-    }
+    if(!res) return;
 
     const data = await res.json();
     totalPaginas = data.totalPages || 0;
@@ -238,9 +217,9 @@ async function cargarRutinas(page = 0){
       <div class="dieta-card">
         <h3>${r.cliente?.nombre || "Sin nombre"}</h3>
         <p>${r.fecha || ""}</p>
+
         <div class="acciones">
           <button class="btn-ver" onclick="verRutina(${r.id})">👁 Ver</button>
-          <button class="btn-ver" onclick="editarRutina(${r.id})">✏️ Editar</button>
           <button class="btn-delete" onclick="eliminarRutina(${r.id})">🗑</button>
         </div>
       </div>`;
@@ -253,35 +232,29 @@ async function cargarRutinas(page = 0){
   }
 }
 
-/* VER */
+/* ===================== VER (FIX IMPORTANTE) ===================== */
 async function verPlan(id){
-  
-const res = await fetchAuth(`${API}/planes?page=${page}&size=5`);
-if(!res) return;
-  
-  const data = await res.json();
+  const res = await fetchAuth(`${API}/planes/${id}`);
+  if(!res) return;
 
-  document.getElementById("visor").innerHTML = data.html || "<p>❌ No hay dieta</p>";
+  const data = await res.json();
+  document.getElementById("visor").innerHTML = data.html || "Sin contenido";
 }
 
 async function verRutina(id){
+  const res = await fetchAuth(`${API}/rutinas/${id}`);
+  if(!res) return;
 
-
-const res = await fetchAuth(`${API}/rutinas?page=${page}&size=5`);
-if(!res) return;
-  
   const data = await res.json();
-
-  document.getElementById("visor").innerHTML = data.rutinaHtml || "<p>❌ No hay rutina</p>";
+  document.getElementById("visor").innerHTML = data.rutinaHtml || "Sin contenido";
 }
 
-/* DELETE */
+/* ===================== DELETE ===================== */
 async function eliminarPlan(id){
   if(!confirm("¿Seguro?")) return;
 
-  await fetch(`${API}/planes/${id}`, {
-    method:"DELETE",
-    headers: getAuthHeaders()
+  await fetchAuth(`${API}/planes/${id}`, {
+    method:"DELETE"
   });
 
   cargarPlanes();
@@ -290,15 +263,14 @@ async function eliminarPlan(id){
 async function eliminarRutina(id){
   if(!confirm("¿Seguro?")) return;
 
-  await fetch(`${API}/rutinas/${id}`, {
-    method:"DELETE",
-    headers: getAuthHeaders()
+  await fetchAuth(`${API}/rutinas/${id}`, {
+    method:"DELETE"
   });
 
   cargarRutinas();
 }
 
-/* PAGINACION */
+/* ===================== PAGINACION ===================== */
 function paginaSiguiente(){
   if(paginaActual < totalPaginas-1){
     paginaActual++;
@@ -318,13 +290,13 @@ function actualizarPaginaUI(){
     `Página ${paginaActual + 1}`;
 }
 
-/* INIT */
+/* ===================== INIT ===================== */
 (async () => {
   await initAPI();
   mostrarDietas();
 })();
 
-/* LOGOUT */
+/* ===================== LOGOUT ===================== */
 function logout(){
   localStorage.removeItem("token");
   window.location.href = "login.html";
