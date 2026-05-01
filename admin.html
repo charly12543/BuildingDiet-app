@@ -40,21 +40,55 @@ async function fetchAuth(url, options = {}){
 </head>
 <body>
 
-<h1>👑 Panel Admin</h1>
+<!-- NAVBAR (igual que tu app) -->
+<nav class="navbar">
+  <div class="nav-container">
 
-<h2>Crear Usuario</h2>
+    <a href="index.html" class="logo">
+      <img src="images/logoGitHub.png">
+    </a>
 
-<input id="usuario" placeholder="Usuario">
-<input id="password" placeholder="Password">
-<select id="rol">
-  <option value="COACH">COACH</option>
-  <option value="ADMIN">ADMIN</option>
-</select>
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 
-<button onclick="crear()">Crear</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">🏠 Inicio</a></li>
+      <li><button onclick="logout()" class="btn-delete">Salir</button></li>
+    </ul>
 
-<h2>Usuarios</h2>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>👑 Panel de Administración</h1>
+  <p>Gestión de usuarios del sistema</p>
+</section>
+
+<section>
+
+<!-- 🔥 FORM PRO -->
+<div class="lead-box">
+
+  <h2>➕ Crear Usuario</h2>
+
+  <input id="usuario" placeholder="Usuario">
+  <input id="password" placeholder="Password" type="password">
+
+  <select id="rol">
+    <option value="COACH">COACH</option>
+    <option value="ADMIN">ADMIN</option>
+  </select>
+
+  <button class="btn-ver" onclick="crear()">Crear Usuario</button>
+
+</div>
+
+<!-- 🔥 LISTA -->
+<h2 style="text-align:center; margin-top:40px;">👥 Usuarios</h2>
+
 <div id="lista"></div>
+
+</section>
 
 <script>
 
@@ -71,9 +105,16 @@ async function cargar(){
 
   data.forEach(u=>{
     html += `
-      <div>
-        👤 ${u.usuario} - ${u.rol}
-        <button onclick="eliminar(${u.id})">❌</button>
+      <div class="dieta-card">
+
+        <h3>👤 ${u.usuario}</h3>
+
+        <p><strong>Rol:</strong> ${u.rol}</p>
+
+        <div class="acciones">
+          <button class="btn-delete" onclick="eliminar(${u.id})">Eliminar</button>
+        </div>
+
       </div>
     `;
   });
@@ -87,21 +128,40 @@ async function crear(){
   const password = document.getElementById("password").value;
   const rol = document.getElementById("rol").value;
 
+  if(!usuario || !password){
+    alert("Completa los campos bro");
+    return;
+  }
+
   await fetchAuth(API + "/admin/usuarios", {
     method:"POST",
     body: JSON.stringify({usuario,password,rol})
   });
+
+  document.getElementById("usuario").value = "";
+  document.getElementById("password").value = "";
 
   cargar();
 }
 
 async function eliminar(id){
 
+  if(!confirm("¿Eliminar usuario?")) return;
+
   await fetchAuth(API + "/admin/usuarios/" + id, {
     method:"DELETE"
   });
 
   cargar();
+}
+
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+}
+
+function toggleMenu(){
+  document.getElementById("navLinks").classList.toggle("active");
 }
 
 cargar();
