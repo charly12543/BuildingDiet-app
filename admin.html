@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Usuarios</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+if(!localStorage.getItem("token")){
+  window.location.href = "login.html";
+}
+
+function getAuthHeaders(){
+  return {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + localStorage.getItem("token")
+  };
+}
+
+async function fetchAuth(url, options = {}){
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      ...getAuthHeaders(),
+      ...(options.headers || {})
+    }
+  });
+
+  if(res.status === 401){
+    localStorage.clear();
+    alert("Sesión expirada 🔐");
+    window.location.href = "login.html";
+    return null;
+  }
+
+  return res;
+}
+</script>
+
+</head>
+<body>
+
+<h1>👑 Panel Admin</h1>
+
+<h2>Crear Usuario</h2>
+
+<input id="usuario" placeholder="Usuario">
+<input id="password" placeholder="Password">
+<select id="rol">
+  <option value="COACH">COACH</option>
+  <option value="ADMIN">ADMIN</option>
+</select>
+
+<button onclick="crear()">Crear</button>
+
+<h2>Usuarios</h2>
+<div id="lista"></div>
+
+<script>
+
+const API = "https://nutrition-backend-1-f2co.onrender.com/api";
+
+async function cargar(){
+
+  const res = await fetchAuth(API + "/admin/usuarios");
+  if(!res) return;
+
+  const data = await res.json();
+
+  let html = "";
+
+  data.forEach(u=>{
+    html += `
+      <div>
+        👤 ${u.usuario} - ${u.rol}
+        <button onclick="eliminar(${u.id})">❌</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("lista").innerHTML = html;
+}
+
+async function crear(){
+
+  const usuario = document.getElementById("usuario").value;
+  const password = document.getElementById("password").value;
+  const rol = document.getElementById("rol").value;
+
+  await fetchAuth(API + "/admin/usuarios", {
+    method:"POST",
+    body: JSON.stringify({usuario,password,rol})
+  });
+
+  cargar();
+}
+
+async function eliminar(id){
+
+  await fetchAuth(API + "/admin/usuarios/" + id, {
+    method:"DELETE"
+  });
+
+  cargar();
+}
+
+cargar();
+
+</script>
+
+</body>
+</html>
